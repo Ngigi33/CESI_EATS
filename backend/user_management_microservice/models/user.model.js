@@ -13,19 +13,7 @@ export default (sequelize, Sequelize)=>{
         password:{
             type: Sequelize.STRING,
             allowNull: false
-        },
-        phoneNumber:{
-            type:Sequelize.STRING(10),
-            allowNull:true,
-            validate:{
-                is: /^[\d+()-\s]+$/i
-            }
-        },
-        address:{
-            type:Sequelize.STRING(255),
-            allowNull:true
         }
-
     })
 
     return User

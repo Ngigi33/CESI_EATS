@@ -21,4 +21,5 @@ module.exports = function(app){
     app.get("/food/name/:name", foodController.getFoodByName)
     app.get("/food/category/:category", foodController.getFoodByCategory)
     app.get("/food/price", foodController.getFoodByPriceRange)
+    app.get("/food/restaurant/:uuid", foodController.getFoodByRestaurant)
 }

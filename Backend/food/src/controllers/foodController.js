@@ -6,8 +6,9 @@ exports.addFood = async (req, res) => {
     try {
         const { name, description, price, category, restaurants } = req.body;
         const image = `${req.file.filename}`;
+        const { uuid } = req.params;
 
-        if (!name || !description || !price || !category || !image || !restaurants) {
+        if (!name || !description || !price || !category || !image || !uuid) {
             return res.status(400).json({ message: "All fields are required", name, description, price, category, image, restaurants });
         }
 
@@ -17,7 +18,7 @@ exports.addFood = async (req, res) => {
             price : req.body.price,
             category : req.body.category,
             imageUrl : image,
-            restaurants: req.body.restaurants // Assuming restaurants is an ObjectId or similar
+            restaurants: uuid // Assuming restaurants is an ObjectId or similar
         });
 
         await newFood.save();
@@ -39,7 +40,7 @@ exports.getAllFoods = async (req, res) => {
 };
 exports.getFoodById = async (req, res) => {
     try {
-        const food = await foodModel.findOne({ idFood: req.params.idFood });
+        const food = await foodModel.findOne({ uuid: req.params.uuid });
         if (!food) {
             return res.status(404).json({ message: "Food item not found" });
         }
@@ -55,10 +56,10 @@ exports.getFoodById = async (req, res) => {
 };
 exports.updateFood = async (req, res) => {
     try {
-        const { idFood } = req.params;
+        const { uuid } = req.params;
         const updatedData = req.body;
 
-        const food = await foodModel.findOneAndUpdate({ idFood }, updatedData, { new: true });
+        const food = await foodModel.findOneAndUpdate({ uuid }, updatedData, { new: true });
         if (!food) {
             return res.status(404).json({ message: "Food item not found" });
         }

@@ -1,6 +1,7 @@
 import express from 'express';
 import {
     createOrder,
+    verifyOrder,
     updateOrderStatus,
     getOrderById,
     getOrdersByUser
@@ -9,10 +10,16 @@ import authMiddleware from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.post('/', authMiddleware, createOrder);
-router.patch('/:id/status', authMiddleware, updateOrderStatus);
-router.get('/:id', authMiddleware, getOrderById);
-router.get('/user/:userId', authMiddleware, getOrdersByUser);
+router.post('/create', createOrder);
+router.post('/verify', verifyOrder);
+router.patch('/status', updateOrderStatus);
+router.get('/:id', getOrderById);
+router.get('/user/:userId', getOrdersByUser);
+
+// router.post('/', authMiddleware, createOrder);
+// router.patch('/:id/status', authMiddleware, updateOrderStatus);
+// router.get('/:id', authMiddleware, getOrderById);
+// router.get('/user/:userId', authMiddleware, getOrdersByUser);
 
 export default router;
 

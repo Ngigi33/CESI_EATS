@@ -1,10 +1,9 @@
-import orderModel from '../models/orderModel';
-import userModel from '../models/userModel';
+import orderModel from '../models/orderModel.js';
+import userModel from '../models/userModel.js';
 import axios from 'axios';
 
 
 export const createOrder = async (req, res) => {
-
 
   try {
     // 1. Create order in MongoDB
@@ -30,6 +29,7 @@ export const createOrder = async (req, res) => {
 
     // 4. Return the order and clientSecret
     res.status(201).json({
+      success: true,
       message: 'Order created successfully',
       order: savedOrder,
       clientSecret,
@@ -46,12 +46,52 @@ export const getOrderById = async (req, res) => {
 
 };
 
+
+export const verifyOrder = async (req, res) => {
+
+  const { orderID, success } = req.body;
+
+  try {
+    if (success == "true") {
+      await orderModel.findByIdAndUpdate(orderID, { payment: true });
+      res.json({ success: true, message: "Paid" });
+    }
+    else {
+      await orderModel.findByIdAndUpdate(orderID);
+      res.json({ success: false, message: "Not Paid" });
+    }
+  }
+  catch (error) {
+    console.error('❌ Error paying for  order:', error.message);
+    res.status(500).json({ error: 'Payment Failed' });
+  }
+
+};
+
 export const updateOrderStatus = async (req, res) => {
+
+
+  try {
+    await orderModel.findByIdAndUpdate(req.body.orderID, { status: req.body.status });
+    res.json({ success: true, message: "Status updated" });
+  }
+
+  catch (error) {
+    console.error('❌ Error paying for  order:', error.message);
+    res.status(500).json({ error: 'Status update failed' });
+  }
 
 };
 
 export const getOrdersByUser = async (req, res) => {
-
+  try {
+    const orders = await orderModel.find({ userId: req.body.userId });
+    res.json({ success: true, data: orders });
+  }
+  catch (error) {
+    console.error('❌ Error paying for  order:', error.message);
+    res.status(500).json({ error: 'Payment Failed' });
+  }
 };
 
 

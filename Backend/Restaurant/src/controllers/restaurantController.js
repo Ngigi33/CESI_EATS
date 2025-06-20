@@ -5,6 +5,9 @@ exports.addRestaurant = async (req, res) => {
     try {
         const { name, address, phoneNumber, email } = req.body;
         const image = `${req.file.filename}`;
+        if (!name || !address || !phoneNumber || !email || !image) {
+            return res.status(400).json({ message: 'Tous les champs sont requis', name      , address, phoneNumber, email, image });
+        }
         const newRestaurant = new restaurantModel({
             name,
             address,

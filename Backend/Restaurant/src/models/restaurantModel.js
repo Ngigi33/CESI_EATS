@@ -3,7 +3,7 @@ const { v4: uuidv4 } = require('uuid'); // Importer la fonction uuidv4 pour gén
 //const AutoIncrement = require('mongoose-sequence')(mongoose); // Importer mongoose-sequence pour l'auto-incrémentation
 
 const restaurantSchema = new mongoose.Schema({
-    IdRestaurant: {
+    uuid: {
         type: String,
         required: true,
         unique: true,

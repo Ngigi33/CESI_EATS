@@ -4,7 +4,7 @@ require('dotenv').config();
 
 exports.connectDB = async () => {
   try {
-    await mongoose.connect('mongodb+srv://simoguidjou:TGjXc7LHZrVK7bfz@cluster0.lhpoivi.mongodb.net/CESI_EATS', {
+    await mongoose.connect('mongodb+srv://ezzoubair123:ezzoubair123@cluster0.d75x2k6.mongodb.net/food-del?', {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });

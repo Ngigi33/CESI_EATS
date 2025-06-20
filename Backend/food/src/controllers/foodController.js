@@ -4,11 +4,11 @@ const foodModel = require("../models/foodModel.js");
 
 exports.addFood = async (req, res) => {
     try {
-        const { name, description, price, category } = req.body;
+        const { name, description, price, category, restaurants } = req.body;
         const image = `${req.file.filename}`;
 
-        if (!name || !description || !price || !category || !image) {
-            return res.status(400).json({ message: "All fields are required", name, description, price, category, image });
+        if (!name || !description || !price || !category || !image || !restaurants) {
+            return res.status(400).json({ message: "All fields are required", name, description, price, category, image, restaurants });
         }
 
         const newFood = new foodModel({
@@ -16,7 +16,8 @@ exports.addFood = async (req, res) => {
             description : req.body.description,
             price : req.body.price,
             category : req.body.category,
-            imageUrl : image
+            imageUrl : image,
+            restaurants: req.body.restaurants // Assuming restaurants is an ObjectId or similar
         });
 
         await newFood.save();

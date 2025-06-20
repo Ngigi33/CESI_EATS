@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid'); // Importer la fonction uuidv4 pour générer des IDs uniques
 
 const foodSchema = new mongoose.Schema({
-     idFood: {
-        type: Number,
+     uuid: {
+        type: String,
         required: true,
         unique: true,
         default : uuidv4
@@ -31,7 +31,7 @@ const foodSchema = new mongoose.Schema({
         required: true
     },
     restaurants: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: "Restaurant",
     }
 }, { timestamps: true });

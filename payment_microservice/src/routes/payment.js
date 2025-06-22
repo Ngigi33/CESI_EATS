@@ -72,4 +72,40 @@ router.get('/history/restaurant/:restaurantId', async (req, res) => {
   res.json(payments);
 });
 
+router.post('/createCheckoutSession', async (req, res) => {
+  const { new_order_id, cartItems, customerId, restaurantId } = req.body;
+
+  try {
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      mode: 'payment',
+      line_items: cartItems.map(item => ({
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: item.name,
+            // description: item.description || '',
+          },
+          unit_amount: item.price * 100, // in cents
+        },
+        quantity: item.quantity,
+      })),
+      //  customer_email: 'customer@example.com', // OR lookup from your DB
+      metadata: {
+        customerId,
+        restaurantId,
+      },
+      success_url: `http://localhost:5173/verify?success=true&orderId=${new_order_id}`,
+      cancel_url: `http://localhost:5173/cancel`,
+    });
+
+    res.status(200).json({ url: session.url });
+  } catch (err) {
+    console.error('Stripe error:', err);
+    res.status(500).json({ error: 'Unable to create Stripe session' });
+  }
+});
+
+
+
 export default router;

@@ -1,15 +1,13 @@
 import mongoose from "mongoose";
 
-const orderSchema = new mongoose.Schema({
-    userId: { type: String, required: true },
-    items: { type: Array, required: true },
-    amount: { type: Number, required: true },
-    address: { type: Object, required: true },
-    status: { type: String, default: "Pending" },
-    date: { type: Date, default: Date.now },
-    payment: { type: Boolean, default: false }
-})
+const userSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    cartData: { type: Object, default: {} },
 
-const orderModel = mongoose.models.order || mongoose.model("order", orderSchema);
+}, { minimize: false })
 
-export default orderModel;
+const userModel = mongoose.models.users || mongoose.model("user", userSchema);
+
+export default userModel;

@@ -14,7 +14,7 @@ router.post('/create', createOrder);
 router.post('/verify', verifyOrder);
 router.patch('/status', updateOrderStatus);
 router.get('/:id', getOrderById);
-router.get('/user/:userId', getOrdersByUser);
+router.post('/userOrders', getOrdersByUser);
 
 // router.post('/', authMiddleware, createOrder);
 // router.patch('/:id/status', authMiddleware, updateOrderStatus);

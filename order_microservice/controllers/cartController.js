@@ -4,7 +4,7 @@ export const addToCart = async (req, res) => {
 
     try {
         let userData = await userModel.findById(req.body.userId);
-        let cartData = userData.cartData || {};
+        let cartData = await userData.cartData || {};
 
 
         //if in cart there is no item id we create an item id
@@ -29,7 +29,7 @@ export const removeFromCart = async (req, res) => {
 
     try {
         let userData = await userModel.findById(req.body.userId);
-        let cartData = userData.cartData || {};
+        let cartData = await userData.cartData || {};
 
 
         if (cartData[req.body.itemId] > 0) {
@@ -48,7 +48,7 @@ export const removeFromCart = async (req, res) => {
 export const getCart = async (req, res) => {
     try {
         let userData = await userModel.findById(req.body.userId);
-        let cartData = userData.cartData || {};
+        let cartData = await userData.cartData;
 
         res.json({ success: true, cartData });
     }
@@ -57,3 +57,13 @@ export const getCart = async (req, res) => {
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
+
+export const createTestUser = async (req, res) => {
+    try {
+        const newUser = await userModel.create({ name: "Test User", cartData: {} });
+        res.json({ success: true, userId: newUser._id });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+

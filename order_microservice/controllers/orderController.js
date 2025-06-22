@@ -8,31 +8,35 @@ export const createOrder = async (req, res) => {
   try {
     // 1. Create order in MongoDB
     const new_order = new orderModel({
-      userId: req.body.userId,
+      // userId: req.body.userId,
+      userId: '68552d7f2952a3f94ea408c7',
       items: req.body.items,
       amount: req.body.amount,
       address: req.body.address
     })
 
+    // console.log('🔍 Order payload:', req.body);
     await new_order.save();
 
     // 2. Clear the user's cart
     await userModel.findByIdAndUpdate(req.body.userId, { cartData: {} });
 
     // 3. Call the payment microservice to create a payment intent
-    const paymentResponse = await axios.post('http://localhost:5002/api/payments/create-payment-intent', {
+    const paymentResponse = await axios.post('http://localhost:5002/api/payments/createCheckoutSession', {
+      new_order_id: new_order._id,
       cartItems: req.body.items,
       customerId: req.body.userId,
       restaurantId: req.body.restaurantId || 'default_restaurant_id',
     });
-    const clientSecret = paymentResponse.data.clientSecret;
+
+    const checkoutUrl = paymentResponse.data.url;
 
     // 4. Return the order and clientSecret
     res.status(201).json({
       success: true,
       message: 'Order created successfully',
-      order: savedOrder,
-      clientSecret,
+      order: new_order,
+      checkoutUrl,
     });
   }
   catch (error) {
@@ -89,6 +93,7 @@ export const getOrdersByUser = async (req, res) => {
     res.json({ success: true, data: orders });
   }
   catch (error) {
+    console.log(error);
     console.error('❌ Error paying for  order:', error.message);
     res.status(500).json({ error: 'Payment Failed' });
   }

@@ -9,6 +9,11 @@ const restaurantSchema = new mongoose.Schema({
         unique: true,
         default : uuidv4
     },
+    OwnerId: {
+        type: String,
+        required: true,
+        unique: false
+    },
     name: {
         type: String,
         required: true,

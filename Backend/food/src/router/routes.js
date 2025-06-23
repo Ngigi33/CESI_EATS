@@ -1,4 +1,5 @@
 const foodController = require("../controllers/foodController")
+const middleware = require("../mideleware/foodMidleware")
 const db = require("../config/db");
 const multer = require('multer');
 //const upload = multer({ dest: 'uploads/' }); // Set the destination for uploaded files
@@ -13,11 +14,11 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 module.exports = function(app){
-    app.post("/food/:uuid", upload.single('image'), foodController.addFood)
-    app.put("/food/:uuid", upload.single('image'), foodController.updateFood)
+    app.post("/food/:uuid", upload.single('image'), foodMidleware.authorization,  foodController.addFood)
+    app.put("/food/:uuid", upload.single('image'), foodMidleware.authorization,  foodController.updateFood)
     app.get("/food", foodController.getAllFoods)
-    app.get("/food/:uuid", foodController.getFoodById)
-    app.delete("/food/:uuid", foodController.deleteFood)
+    app.get("/food/:uuid", foodMidleware.authorization, foodController.getFoodById)
+    app.delete("/food/:uuid", foodMidleware.authorization,  foodController.deleteFood)
     app.get("/food/name/:name", foodController.getFoodByName)
     app.get("/food/category/:category", foodController.getFoodByCategory)
     app.get("/food/price", foodController.getFoodByPriceRange)

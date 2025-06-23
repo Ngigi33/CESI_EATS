@@ -17,8 +17,6 @@ axios.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error('Erreur API:', error);
-    // Vous pouvez ajouter une logique de gestion d'erreur plus sophistiquée ici,
-    // comme afficher une notification utilisateur.
     return Promise.reject(error);
   }
 );
@@ -137,6 +135,14 @@ export const articleService = {
       throw new Error(`Erreur lors de la récupération de l'article ${articleId}`);
     }
   },
+  getArticlesByRestaurant: async (restaurantId) => {
+    try {
+      const response = await axios.get(`${API_CONFIG.ARTICLE_SERVICE}/articles/restaurant/${restaurantId}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(`Erreur lors de la récupération des articles du restaurant ${restaurantId}`);
+    }
+  },
   createArticle: async (articleData) => {
     try {
       const response = await axios.post(`${API_CONFIG.ARTICLE_SERVICE}/articles`, articleData);
@@ -180,6 +186,14 @@ export const menuService = {
     } catch (error) {
       throw new Error('Erreur lors de la récupération du menu');
     }
+  },
+  getMenusByRestaurant: async (restaurantId) => {
+    try {
+      const response = await axios.get(`${API_CONFIG.MENU_SERVICE}/menus/restaurant/${restaurantId}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(`Erreur lors de la récupération des menus du restaurant ${restaurantId}`);
+    }
   }
 };
 
@@ -210,7 +224,7 @@ export const mapOrderStatus = (dbStatus, accepted) => {
 export const formatDate = (dateString) => {
   const date = new Date(dateString);
   return {
-    date: date.toLocaleDateString('fr-FR'), // Renvoie 'JJ/MM/AAAA'
-    time: date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }), // Renvoie 'HH:MM'
+    date: date.toLocaleDateString('fr-FR'),
+    time: date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
   };
 };

@@ -1,29 +1,20 @@
-// backend/MicroServices/Menu/models/menuModel.js
-// backend/MicroServices/Article/models/articleModel.js
+// backend/MicroServices/ArticleServer/models/articleModel.js
 
-import mongoose from "mongoose"; // Utiliser 'import'
+import mongoose from 'mongoose';
 
 const articleSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  description: { type: String, required: true },
+  price: { type: Number, required: true },
+  image: { type: String, required: true },
+  type: { type: String, required: true }, // 'type' pour la catégorie du plat
   restaurantId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Restaurant", // Assurez-vous que le modèle Restaurant existe
+    ref: 'Restaurant', // Assurez-vous que 'Restaurant' correspond au nom de votre modèle Restaurant
     required: true,
   },
-  name: {
-    type: String,
-    required: true,
-  },
-  image: String,
-  description: String,
-  price: {
-    type: Number,
-    required: true,
-  },
-  type: { // Ex: "plat", "boisson", "dessert"
-    type: String,
-    required: true,
-  },
+  isAvailable: { type: Boolean, default: true },
 });
 
-const Article = mongoose.model("Article", articleSchema);
-export default Article; // Exporter le modèle comme une exportation par défaut
+const Article = mongoose.model('Article', articleSchema);
+export default Article;

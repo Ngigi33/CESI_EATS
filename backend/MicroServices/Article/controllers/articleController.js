@@ -1,4 +1,4 @@
-// backend/MicroServices/Article/controllers/articleController.js
+/// backend/MicroServices/Article/controllers/articleController.js
 
 import Article from "../models/articleModel.js"; // Utiliser 'import' et le bon chemin
 

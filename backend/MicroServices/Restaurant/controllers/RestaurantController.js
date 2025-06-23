@@ -13,14 +13,19 @@ export const getAllRestaurants = async (req, res) => { // Utiliser 'export const
 };
 
 // Get specific restaurant by ID
-export const getRestaurantById = async (req, res) => { // Utiliser 'export const'
+// Dans backend/MicroServices/Restaurant/controllers/restaurantController.js
+export const getRestaurantById = async (req, res) => {
   try {
+    console.log("Recherche du restaurant avec l'ID:", req.params.id); // Ajouté
     const restaurant = await Restaurant.findById(req.params.id);
     if (!restaurant) {
+      console.log("Restaurant non trouvé pour l'ID:", req.params.id); // Ajouté
       return res.status(404).json({ error: "restaurant not found" });
     }
+    console.log("Restaurant trouvé:", restaurant); // Ajouté
     res.status(200).json(restaurant);
   } catch (error) {
+    console.error("Erreur lors de la récupération du restaurant par ID:", error); // Ajouté
     res.status(500).json({ error: "Internal server error" });
   }
 };

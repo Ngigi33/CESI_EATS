@@ -2,11 +2,13 @@
 
 import 'dotenv/config'; // ES Module way to load dotenv
 import express from 'express';
+import cors from 'cors';
 import { connectDB } from './config/db1.js' // Ensure db.js was renamed to db.mjs
 import orderRouter from './routes/orderRoute.js'; // Ensure orderRoute.js uses 'export default'
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 connectDB(); // Call the connectDB function
 

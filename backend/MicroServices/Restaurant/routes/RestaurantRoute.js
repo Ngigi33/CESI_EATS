@@ -3,7 +3,7 @@
 import express from "express"; // Utiliser 'import'
 const router = express.Router();
 // Importer toutes les exportations nommées du contrôleur
-import * as restaurantController from "../controllers/restaurantController.js"; // Utiliser 'import * as' et s'assurer que le chemin est correct
+import * as restaurantController from "../controllers/RestaurantController.js"; // Utiliser 'import * as' et s'assurer que le chemin est correct
 
 // Obtenir tous les restaurants
 router.get("/", restaurantController.getAllRestaurants);

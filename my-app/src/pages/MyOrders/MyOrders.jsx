@@ -1,107 +1,183 @@
-// MyOrders.jsx
-import React, { useState } from 'react';
-import './MyOrders.css'; // Import your CSS file
-import FilterSearchSection from './FilterSearchSection'; // Import the filter/search component
-import OrderCard from './OrderCard'; // Import the order card component
+import React, { useState, useEffect } from 'react';
+import './MyOrders.css';
+import FilterSearchSection from './FilterSearchSection';
+import OrderCard from './OrderCard';
+import {
+  orderService,
+  restaurantService,
+  mapOrderStatus,
+  formatDate, // Ensure formatDate is imported
+} from '../../services/apiService';
 
 const MyOrders = () => {
-  const [orders, setOrders] = useState([
-    {
-      id: 'ORD-00123',
-      restaurant: 'Pizza Palace',
-      date: '18/06/2025',
-      total: '€28.50',
-      items: [
-        { name: 'Margherita Pizza', quantity: 1, price: '€14.50' },
-        { name: 'Pepperoni Pizza', quantity: 1, price: '€14.00' }
-      ],
-      status: 'Delivered',
-      statusClass: 'delivered',
-      deliveryTime: '7:45 PM'
-    },
-    {
-      id: 'ORD-00115',
-      restaurant: 'Burger King',
-      date: '15/06/2025',
-      total: '€32.90',
-      items: [
-        { name: 'Whopper', quantity: 2, price: '€19.90' },
-        { name: 'Fries', quantity: 2, price: '€7.00' },
-        { name: 'Coca-Cola', quantity: 2, price: '€6.00' }
-      ],
-      status: 'Delivered',
-      statusClass: 'delivered',
-      deliveryTime: '8:30 PM'
-    },
-    {
-      id: 'ORD-00129',
-      restaurant: 'Sushi Tokyo',
-      date: '20/06/2025',
-      total: '€45.70',
-      items: [
-        { name: 'Sushi Assortment (18 pcs)', quantity: 1, price: '€32.50' },
-        { name: 'Miso Soup', quantity: 2, price: '€7.00' },
-        { name: 'Edamame', quantity: 1, price: '€6.20' }
-      ],
-      status: 'Preparing',
-      statusClass: 'preparing',
-      deliveryTime: 'Estimated 8:15 PM'
-    },
-    {
-      id: 'ORD-00132',
-      restaurant: 'Thai Spice',
-      date: '20/06/2025',
-      total: '€38.40',
-      items: [
-        { name: 'Pad Thai', quantity: 2, price: '€25.90' },
-        { name: 'Spring Rolls', quantity: 1, price: '€7.50' },
-        { name: 'Iced Tea', quantity: 2, price: '€5.00' }
-      ],
-      status: 'Pending',
-      statusClass: 'pending',
-      deliveryTime: 'Estimated 9:00 PM'
-    }
-  ]);
-
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [filterStatus, setFilterStatus] = useState('all');
-  const [activeOrder, setActiveOrder] = useState(null); // Managed here
+  const [activeOrder, setActiveOrder] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
+  // Function to fetch restaurant details
+  const fetchRestaurantDetails = async (restaurantId) => {
+    try {
+      const restaurant = await restaurantService.getRestaurantById(restaurantId);
+      // Assuming getRestaurantById returns an object with a 'name' property directly
+      return restaurant;
+    } catch (error) {
+      console.error(`Erreur lors de la récupération du restaurant ${restaurantId}:`, error);
+      // Return a fallback object to prevent errors in subsequent processing
+      return { name: 'Restaurant Inconnu', image: '' }; // Added image fallback
+    }
+  };
+
+  // Function to process raw order data
+  const processOrders = async (ordersData) => {
+    const processedOrders = await Promise.all(
+      ordersData.map(async (order) => {
+        let restaurantName = 'Chargement...'; // Default
+        let restaurantImage = '';
+
+        // Fetch restaurant details
+        if (order.restaurantId) {
+          try {
+            const restaurant = await fetchRestaurantDetails(order.restaurantId);
+            restaurantName = restaurant.name || 'Nom Inconnu';
+            restaurantImage = restaurant.image || ''; // Fallback if no image
+          } catch (error) {
+            console.error(
+              `Could not fetch restaurant for order ${order._id}:`,
+              error
+            );
+            restaurantName = 'Restaurant non trouvé'; // Fallback if fetch fails
+            restaurantImage = ''; // Ensure image is also reset on error
+          }
+        } else {
+          restaurantName = 'Pas de restaurant';
+          restaurantImage = '';
+        }
+
+        // Format date and time
+        const formattedDateTime = formatDate(order.created); // Calls formatDate, returns { date: string, time: string }
+        
+        // Extract the date and time strings from the object
+        const displayDate = formattedDateTime.date;
+        const displayTime = formattedDateTime.time;
+
+        // Map order status
+        const { status, statusClass } = mapOrderStatus(
+          order.status,
+          order.accepted
+        );
+
+        // Calculate total price if needed, or use existing price
+        const total = order.price ? `${order.price.toFixed(2)} €` : 'N/A';
+
+        return {
+          id: order._id,
+          restaurantId: order.restaurantId,
+          restaurant: restaurantName,
+          restaurantImage: restaurantImage, // Pass restaurant image if needed in OrderCard
+          // Pass the formatted date and time strings directly
+          date: displayDate, // Now this is a string like "22/06/2025"
+          time: displayTime, // Now this is a string like "14:02"
+          total: total,
+          status: status,
+          statusClass: statusClass,
+          items: order.menus || [], // Assuming 'menus' array holds item details
+          deliveryTime: '30-45 min', // Example static value, consider making this dynamic if possible
+          deliveryAddress: order.address,
+          accepted: order.accepted,
+        };
+      })
+    );
+    return processedOrders;
+  };
+
+  const fetchOrders = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await orderService.getAllOrders();
+      const processed = await processOrders(data);
+      setOrders(processed);
+    } catch (err) {
+      console.error('Erreur lors de la récupération des commandes:', err);
+      setError('Impossible de charger les commandes. Veuillez réessayer.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const handleToggleActiveOrder = (id) => {
+    setActiveOrder(activeOrder === id ? null : id);
+  };
+
+  const handleCancelOrder = async (orderId) => {
+    if (window.confirm('Êtes-vous sûr de vouloir annuler cette commande ?')) {
+      try {
+        await orderService.updateOrder(orderId, { status: 'cancelled', accepted: false });
+        alert('Commande annulée avec succès.');
+        fetchOrders(); // Refresh the list
+      } catch (err) {
+        console.error('Erreur lors de l\'annulation de la commande:', err);
+        alert('Échec de l\'annulation de la commande.');
+      }
+    }
+  };
+
+  const handleRefresh = () => {
+    fetchOrders();
+    setFilterStatus('all');
+    setSearchTerm('');
+    setActiveOrder(null);
+  };
+
   const filteredOrders = orders.filter(order => {
-    // Filter by status
-    if (filterStatus !== 'all' && order.statusClass !== filterStatus) {
-      return false;
-    }
+    const matchesStatus = filterStatus === 'all' || order.statusClass === filterStatus;
+    const matchesSearch = searchTerm === '' ||
+      order.restaurant.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.id.toLowerCase().includes(searchTerm.toLowerCase()); // Search by last 4 chars of ID if displayed
 
-    // Filter by search term
-    const searchTermLower = searchTerm.toLowerCase();
-    if (searchTerm && !(
-      order.id.toLowerCase().includes(searchTermLower) ||
-      order.restaurant.toLowerCase().includes(searchTermLower) ||
-      order.items.some(item => item.name.toLowerCase().includes(searchTermLower))
-    )) {
-      return false;
-    }
-
-    return true;
+    return matchesStatus && matchesSearch;
   });
 
-  const handleCancelOrder = (orderId) => {
-    setOrders(orders.map(order =>
-      order.id === orderId
-        ? { ...order, status: 'Cancelled', statusClass: 'cancelled' }
-        : order
-    ));
-    setActiveOrder(null); // Close the cancelled order
-  };
+  if (loading) {
+    return (
+      <div className="my-orders-container">
+        <div className="loading-state">
+          <p>Chargement des commandes...</p>
+        </div>
+      </div>
+    );
+  }
 
-  const handleToggleActiveOrder = (orderId) => {
-    setActiveOrder(activeOrder === orderId ? null : orderId);
-  };
+  if (error) {
+    return (
+      <div className="my-orders-container">
+        <div className="error-state">
+          <div className="error-message-box">
+            <p>{error}</p>
+            <button onClick={handleRefresh} className="retry-button">
+              Réessayer
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="my-orders-container">
-      <h1 className="page-title">My Orders</h1>
+      <div className="page-header">
+        <h1 className="page-title">Mes Commandes</h1>
+        <button onClick={handleRefresh} className="refresh-button">
+          Actualiser
+        </button>
+      </div>
 
       <FilterSearchSection
         searchTerm={searchTerm}
@@ -113,16 +189,20 @@ const MyOrders = () => {
       <div className="orders-list">
         {filteredOrders.length === 0 ? (
           <div className="no-orders">
-            <p>No orders found</p>
+            <p>Aucune commande trouvée.</p>
+            {/* Specific message if no orders loaded at all (not just filtered) */}
+            {orders.length === 0 && (
+              <p>Vous n'avez pas encore passé de commande.</p>
+            )}
           </div>
         ) : (
           filteredOrders.map(order => (
             <OrderCard
-              key={order.id}
+              key={order.id} // Use the processed order ID
               order={order}
-              isActive={activeOrder === order.id} // Pass active state as prop
-              onToggleActive={handleToggleActiveOrder} // Pass toggle function as prop
-              onCancelOrder={handleCancelOrder} // Pass cancel function as prop
+              isActive={activeOrder === order.id}
+              onToggleActive={handleToggleActiveOrder}
+              onCancelOrder={handleCancelOrder}
             />
           ))
         )}

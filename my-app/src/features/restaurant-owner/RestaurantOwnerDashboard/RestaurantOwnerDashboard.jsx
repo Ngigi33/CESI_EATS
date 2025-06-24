@@ -23,30 +23,47 @@ const RestaurantOwnerDashboard = ({ setShowLogin }) => {
     avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
   };
 
+//   useEffect(() => {
+//   const fetchData = async () => {
+//     try {
+//       const resRestaurants = await fetch('api/restaurants');
+//       const dataRestaurants = await resRestaurants.json();
+//       setRestaurants(dataRestaurants);
+
+//       const resArticles = await fetch('/api/articles');
+//       const dataArticles = await resArticles.json();
+//       setArticles(dataArticles);
+
+//       const resMenus = await fetch('/api/menus');
+//       const dataMenus = await resMenus.json();
+//       setMenus(dataMenus);
+
+//       const resOrders = await fetch('/api/orders');
+//       const dataOrders = await resOrders.json();
+//       setOrders(dataOrders);
+
+//     } catch (error) {
+//       console.error('Erreur lors du chargement des données', error);
+//     }
+//   };
+
+//   fetchData();
+// }, []);
+
   useEffect(() => {
-    setRestaurants([
-      {
-        id: 1,
-        name: "Le Petit Bistro",
-        address: "123 Rue de la Paix, Lyon",
-        status: "open",
-        image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=300&h=200&fit=crop",
-        opening: "09:00",
-        closing: "22:00",
-        tags: ["French", "bistro", "traditional"],
-        description: "Traditional French cuisine"
+    const fetchData = async () => {
+      try {
+        const resArticles = await fetch('/api/articles');
+        const dataArticles = await resArticles.json();
+        setArticles(dataArticles);
+      } catch (error) {
+        console.error('Erreur lors du chargement des données', error);
       }
-    ]);
-    setArticles([
-      {
-        id: 1,
-        restaurantId: 1,
-        name: "Coq au Vin",
-        image: "https://images.unsplash.com/photo-1551218808-94e220e084d2?w=200&h=150&fit=crop",
-        description: "Traditional French dish",
-        price: 18.5,
-        type: "main"
-      },
+    };
+
+    fetchData();
+  }, []);
+
       {
         id: 2,
         restaurantId: 1,

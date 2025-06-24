@@ -1,0 +1,225 @@
+/* Dashboard Navbar */
+.dashboard-navbar {
+    background-color: #ffffff;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid #e2e8f0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.dashboard-navbar-content {
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 4rem;
+}
+
+.dashboard-navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.dashboard-navbar-logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.dashboard-navbar-subtitle {
+    font-size: 0.875rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.dashboard-navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Notifications */
+.notification-icon-container {
+    position: relative;
+}
+
+.notification-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: #4b5563;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.notification-icon:hover {
+    color: #1f2937;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -0.5rem;
+    right: -0.5rem;
+    background-color: #ef4444;
+    color: #ffffff;
+    font-size: 0.75rem;
+    border-radius: 9999px;
+    width: 1.25rem;
+    height: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* User Menu */
+.user-menu {
+    position: relative;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s ease;
+}
+
+.user-info:hover {
+    background-color: #f9fafb;
+}
+
+.user-info:hover + .user-dropdown,
+.user-dropdown:hover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.user-avatar {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    border: 2px solid #e2e8f0;
+    transition: border-color 0.2s ease;
+}
+
+.user-info:hover .user-avatar {
+    border-color: #d1d5db;
+}
+
+.user-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #1f2937;
+}
+
+/* User Dropdown */
+.user-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.5rem;
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    min-width: 12rem;
+    padding: 0.5rem 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+    z-index: 50;
+}
+
+.dropdown-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    color: #374151;
+    font-size: 0.875rem;
+}
+
+.dropdown-item:hover {
+    background-color: #f9fafb;
+}
+
+.dropdown-item.logout {
+    color: #ef4444;
+}
+
+.dropdown-item.logout:hover {
+    background-color: #fef2f2;
+}
+
+.dropdown-icon {
+    width: 1rem;
+    height: 1rem;
+}
+
+.dropdown-divider {
+    margin: 0.5rem 0;
+    border: none;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dashboard-navbar-subtitle {
+        display: none;
+    }
+    
+    .dashboard-navbar-logo {
+        font-size: 1.25rem;
+    }
+    
+    .user-name {
+        display: none;
+    }
+    
+    .dashboard-navbar-content {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-navbar-logo {
+        font-size: 1rem;
+    }
+    
+    .user-avatar {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+    
+    .notification-icon {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+}

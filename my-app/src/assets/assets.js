@@ -1,6 +1,8 @@
 import basket_icon from './basket_icon.png'
 import logo from './logo.png'
 import header_img from './header_img.png'
+import header_img2 from './header_img2.png'
+import header_img3 from './header_img3.png'
 import search_icon from './search_icon.png'
 import menu_1 from './menu_1.png'
 import menu_2 from './menu_2.png'
@@ -60,11 +62,18 @@ import bag_icon from './bag_icon.png'
 import logout_icon from './logout_icon.png'
 import parcel_icon from './parcel_icon.png'
 import google_icon from './google_icon.png'
+import add_icon from './add_icon.png'
+import order_icon from './order_icon.png'
+import profile_image from './profile_image.png'
+import upload_area from './upload_area.png'
+
 
 export const assets = {
     logo,
     basket_icon,
     header_img,
+    header_img2,
+    header_img3,
     search_icon,
     rating_starts,
     add_icon_green,
@@ -81,6 +90,10 @@ export const assets = {
     logout_icon,
     bag_icon,
     parcel_icon,
+    add_icon,
+    order_icon,
+    profile_image,
+    upload_area,
     google_icon
 }
 
@@ -350,3 +363,5 @@ export const food_list = [
         category: "Noodles"
     }
 ]
+
+export const url = 'http://localhost:4000'

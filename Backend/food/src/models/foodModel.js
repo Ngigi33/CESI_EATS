@@ -30,11 +30,42 @@ const foodSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    restaurants: {
+    restaurantsid: {
       type: String,
       ref: "Restaurant",
+    },
+    menuId: {
+        type: String,
+        ref: "RestaurantMenu",
+        required: true
     }
 }, { timestamps: true });
 
 const foodModel = mongoose.models.food || mongoose.model('Food', foodSchema);
-module.exports = foodModel;
+
+const restaurantMenuschema = new mongoose.Schema({
+    uuid: {
+        type: String,
+        required: true,
+        unique: true,
+        default : uuidv4
+    },
+    restaurantId: {
+        type: String,
+        required: true,
+        unique: false
+    },
+    name: {
+        type: String,
+        required: true
+    },
+    imageUrl: {
+        type: String,
+        required: false
+    }
+}, { timestamps: true });
+const restaurantMenu = mongoose.models.restaurantMenu || mongoose.model('RestaurantMenu', restaurantMenuschema);
+module.exports = {
+    foodModel,
+    restaurantMenu
+};

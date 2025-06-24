@@ -1,23 +1,31 @@
-//const {app} = require("./index.js");
-const port = 4001;
+// backend/MicroServices/Restaurant/restaurantServer.js
 
-const express = require('express');
-const cors = require('cors');
+//import 'dotenv/config'; // Pour charger les variables d'environnement (PORT, etc.)
+import express from 'express';
+import cors from 'cors';
+import { connectDB } from './config/db2.js'; // Chemin correct vers votre db.mjs globale
+import restaurantRouter from './routes/RestaurantRoute.js'; // Importer le routeur restaurant
+
 const app = express();
-const mongoose = require('mongoose');
-const db = require('./config/db');
+// Choisissez un port différent pour chaque microservice. Ex: 4004 pour Restaurant
+const port = process.env.PORT || 4004;
 
-require('dotenv').config();
+// Middleware
+app.use(express.json()); // Pour analyser les corps de requête JSON
+app.use(cors());         // Pour activer le Cross-Origin Resource Sharing
 
-app.use(cors());
-app.use(express.json());
-db.connectDB();
- 
-router = require('./router/routes')(app);
+// Connexion à la base de données
+connectDB();
+
+// API Endpoints for Restaurant Service
+app.use('/restaurants', restaurantRouter); // Toutes les requêtes commençant par /restaurants seront gérées par restaurantRouter
+
+// Route par défaut pour le service Restaurant (pour test simple)
 app.get('/', (req, res) => {
-    res.send("Hello World")
-})
+    res.send("Restaurant Service API is running");
+});
 
-app.listen(port, async()=>{
-    console.log('Server is running on port', {port});
-})
+// Démarrer le serveur
+app.listen(port, () => {
+    console.log(`Restaurant Service running on http://localhost:${port}`);
+});

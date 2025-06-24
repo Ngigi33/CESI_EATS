@@ -1,41 +1,31 @@
-const mongoose = require('mongoose');
-const { v4: uuidv4 } = require('uuid'); // Importer la fonction uuidv4 pour générer des IDs uniques
-//const AutoIncrement = require('mongoose-sequence')(mongoose); // Importer mongoose-sequence pour l'auto-incrémentation
+// backend/MicroServices/Restaurant/models/restaurantModel.js
+
+import mongoose from "mongoose"; // Utiliser 'import'
 
 const restaurantSchema = new mongoose.Schema({
-    uuid: {
-        type: String,
-        required: true,
-        unique: true,
-        default : uuidv4
+  userId: Number,
+  owner: Number, // Assuming 'owner' refers to a user ID
+  name: {
+    type: String,
+    required: true,
+  },
+  address: {
+    type: String,
+    required: true,
+  },
+  status: String,
+  image: String,
+  opening: String,
+  closing: String,
+  tags: Array,
+  description: String,
+  articles: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Article", // Assurez-vous que le modèle Article existe et est bien importé là où il est nécessaire
     },
-    OwnerId: {
-        type: String,
-        required: true,
-        unique: false
-    },
-    name: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    address: {
-        type: String,
-        required: true
-    },
-    phoneNumber: {
-        type: String,
-        required: true
-    },
-    email: {
-        type: String,
-        required: false,
-        unique: true
-    },
-    imageUrl: {
-        type: String,
-        required: true
-    }
-}, { timestamps: true });
-const restaurantModel = mongoose.models.restaurant || mongoose.model('Restaurant', restaurantSchema);
-module.exports = restaurantModel;
+  ],
+});
+
+const Restaurant = mongoose.model("Restaurant", restaurantSchema);
+export default Restaurant; // Exporter le modèle comme une exportation par défaut

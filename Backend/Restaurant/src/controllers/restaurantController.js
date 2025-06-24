@@ -1,84 +1,93 @@
 const restaurantModel = require('../models/restaurantModel');
+/// backend/MicroServices/restaurantModel/controllers/restaurantController.js
 
+// Utiliser 'import' et s'assurer que le chemin est correct
 
-exports.addRestaurant = async (req, res) => {
-    try {
-        const { name, address, phoneNumber, email } = req.body;
-        const image = `${req.file.filename}`;
-        if (!name || !address || !phoneNumber || !email || !image) {
-            return res.status(400).json({ message: 'Tous les champs sont requis', name      , address, phoneNumber, email, image });
-        }
-        const newRestaurant = new restaurantModel({
-            name,
-            address,
-            phoneNumber,
-            email,
-            imageUrl: image
-        });
-        await newRestaurant.save();
-        res.status(201).json({ message: 'Restaurant créé avec succès', restaurant: newRestaurant });
-    } catch (error) {
-        res.status(500).json({ message: 'Erreur lors de la création du restaurant', error: error.message });
-    }
-};
-exports.getAllRestaurants = async (req, res) => {
-    try {
-        const restaurants = await restaurantModel.find();
-        res.status(200).json(restaurants);
-    } catch (error) {
-        res.status(500).json({ message: 'Erreur lors de la récupération des restaurants', error: error.message });
-    }
-};
-exports.getRestaurantById = async (req, res) => {
-    try {
-        const restaurant = await restaurantModel.findOne({ IdRestaurant: req.params.id }); // Utiliser restaurantId pour la recherche
-        if (!restaurant) {                          
-            return res.status(404).json({ message: 'Restaurant non trouvé' });
-        }
-        res.status(200).json(restaurant);
-    } catch (error) {
-        res.status(500).json({ message: 'Erreur lors de la récupération du restaurant', error: error.message });
-    }
-};  
-
-exports.updateRestaurant = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const updatedData = req.body;
-
-        const restaurant = await restaurantModel.findByIdAndUpdate(id, updatedData, { new: true });
-        if (!restaurant) {
-            return res.status(404).json({ message: 'Restaurant non trouvé' });
-        }
-        res.status(200).json({ message: 'Restaurant mis à jour avec succès', restaurant });
-    } catch (error) {
-        res.status(500).json({ message: 'Erreur lors de la mise à jour du restaurant', error: error.message });
-    }
+// Get all restaurant
+export const getAllRestaurants = async (req, res) => { // Utiliser 'export const'
+  try {
+    const restaurants = await restaurantModel.find();
+    res.status(200).json(restaurants);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
 };
 
-exports.deleteRestaurant = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const restaurant = await restaurantModel.findByIdAndDelete(id);
-        if (!restaurant) {
-            return res.status(404).json({ message: 'Restaurant non trouvé' });
-        }
-        res.status(200).json({ message: 'Restaurant supprimé avec succès' });
-    } catch (error) {
-        res.status(500).json({ message: 'Erreur lors de la suppression du restaurant', error: error.message });
+// Get specific restaurant by ID
+// Dans backend/MicroServices/restaurantModel/controllers/restaurantController.js
+export const getRestaurantById = async (req, res) => {
+  try {
+    console.log("Recherche du restaurant avec l'ID:", req.params.id); // Ajouté
+    const restaurant = await restaurantModel.findById(req.params.id);
+    if (!restaurant) {
+      console.log("restaurantModel non trouvé pour l'ID:", req.params.id); // Ajouté
+      return res.status(404).json({ error: "restaurant not found" });
     }
+    console.log("restaurantModel trouvé:", restaurant); // Ajouté
+    res.status(200).json(restaurant);
+  } catch (error) {
+    console.error("Erreur lors de la récupération du restaurant par ID:", error); // Ajouté
+    res.status(500).json({ error: "Internal server error" });
+  }
 };
 
-exports.getRestaurantByName = async (req, res) => {
-    try {
-        const { name } = req.params;
-        const restaurant = await restaurantModel.findOne({ name: new RegExp(name, 'i') }); // Recherche insensible à la casse
-        if (!restaurant) {
-            return res.status(404).json({ message: 'Restaurant non trouvé' });
-        }
-        res.status(200).json(restaurant);
-    } catch (error) {
-        res.status(500).json({ message: 'Erreur lors de la récupération du restaurant', error: error.message });
-    }
+// Get all restaurants of a particular owner
+export const getRestaurantsByOwner = async (req, res) => { // Utiliser 'export const'
+  const owner = req.params.ownerId;
+  try {
+    const restaurants = await restaurantModel.find({ owner });
+    res.status(200).json(restaurants);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
 };
 
+// Create a restaurant
+export const createRestaurant = async (req, res) => { // Utiliser 'export const'
+  try {
+    const restaurant = new restaurantModel(req.body);
+    const validationError = restaurant.validateSync();
+    if (validationError) {
+      const errors = Object.keys(validationError.errors).map(
+        (key) => validationError.errors[key].message
+      );
+      return res.status(400).json({ errors });
+    }
+    const savedRestaurant = await restaurant.save();
+    res.status(201).json(savedRestaurant);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// Edit a restaurant
+export const updateRestaurant = async (req, res) => { // Utiliser 'export const'
+  try {
+    const restaurant = await restaurantModel.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {
+        new: true,
+      }
+    );
+    if (!restaurant) {
+      return res.status(404).json({ error: "restaurantModel not found" });
+    }
+    res.status(200).json(restaurant);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// Delete a restaurant
+export const deleteRestaurant = async (req, res) => { // Utiliser 'export const'
+  try {
+    const restaurant = await restaurantModel.findByIdAndRemove(req.params.id);
+    if (!restaurant) {
+      return res.status(404).json({ error: "restaurantModel not found" });
+    }
+    res.status(204).json();
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

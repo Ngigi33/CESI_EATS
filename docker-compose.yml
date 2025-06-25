@@ -1,0 +1,54 @@
+version: '3.8'
+
+
+services:
+
+  user_service:
+    build:
+      context: ./backend/user_management_microservice
+    container_name: user_management_microservice
+    env_file:
+      - ./backend/user_management_microservice/.env
+    depends_on:
+      - mysql
+    restart: always
+    expose:
+      - "5000"
+    ports:
+      - "5000:5000"
+    networks:
+      - backend-net
+  
+  mysql:
+    image: mysql:8.0
+    container_name: user-management-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: userdb-test
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - backend-net
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_gateway
+    ports:
+      - "80:80"
+    volumes:
+      - "./nginx/default.conf:/etc/nginx/conf.d/default.conf"
+    depends_on:
+      - user_service
+    networks:
+      - backend-net
+
+
+volumes:
+  mysql-data:
+
+networks:
+  backend-net:
+    driver: bridge

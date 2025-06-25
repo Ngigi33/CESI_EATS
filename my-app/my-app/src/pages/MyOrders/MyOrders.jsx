@@ -8,20 +8,20 @@ import axios from 'axios';
 
 const MyOrders = () => {
 
-  const { url, token } = useContext(StoreContext);
+  const { url_orders, token } = useContext(StoreContext);
   const [data, setData] = useState([]);
 
   const fetchOrders = async () => {
-    const response = await axios.post("http://localhost:3001/api/orders/userOrders", { userId: "68552d7f2952a3f94ea408c7" });
+    const response = await axios.post(url_orders + "/api/orders/userOrders", {}, { headers: { token } });
     setData(response.data.data);
     console.log(response.data.data)
   }
 
-  const handleCancelOrder = async (orderID,status) => {
+  const handleCancelOrder = async (orderID, status) => {
     try {
-      const response = await axios.patch("http://localhost:3001/api/orders/status", {
-        orderID:orderID,
-        status:status
+      const response = await axios.patch(url_orders + "api/orders/status", {
+        orderID: orderID,
+        status: status
       });
 
       if (response.data.success) {
@@ -39,8 +39,12 @@ const MyOrders = () => {
 
 
   useEffect(() => {
-    fetchOrders();
-  }, [])
+    if (token) {
+      fetchOrders();
+    }
+
+
+  }, [token])
 
   return (
     <div className="my-orders">
@@ -68,7 +72,7 @@ const MyOrders = () => {
 
                 {['pending', 'preparing'].includes(order.status.toLowerCase()) && (
                   <div className="cancel-button">
-                    <button onClick={() => handleCancelOrder(order._id,"Cancelled")}>Cancel Order</button>
+                    <button onClick={() => handleCancelOrder(order._id, "Cancelled")}>Cancel Order</button>
                   </div>
                 )}
 

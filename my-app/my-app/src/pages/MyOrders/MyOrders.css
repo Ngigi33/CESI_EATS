@@ -1,0 +1,160 @@
+.my-orders {
+  padding: 2rem 5%; 
+  background-color: #ffffff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: #333;
+  font-weight: bold;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.my-orders-order {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  background-color: transparent;
+  transition: all 0.3s ease;
+  font-size: 1.1rem;
+  box-shadow: none;
+  backdrop-filter: blur(5px);
+}
+
+.my-orders-order:hover {
+  background-color: #ffffffee;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* Left content with icon and order details */
+.order-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  flex: 1;
+}
+
+.order-icon {
+  font-size: 2rem;
+  color: #6c63ff;
+  margin-top: 3px;
+}
+
+.order-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.order-text p {
+  margin: 0;
+  color: #333;
+}
+
+.order-text p:nth-of-type(2) {
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+.order-text p:nth-of-type(3) {
+  color: #666;
+}
+
+/* Right section with status and button */
+.order-controls {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.order-status {
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 1rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+}
+
+/* Status Color Variants */
+.status-pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-preparing {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.status-dispatched {
+  background-color: #d6d8d9;
+  color: #383d41;
+}
+
+.status-delivered {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-cancelled {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+
+.track-button button {
+  padding: 0.7rem 1.4rem;
+  font-size: 1rem;
+  background-color: #6c63ff;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.track-button button:hover {
+  background-color: #554fe0;
+}
+.cancel-button button {
+  padding: 0.7rem 1.4rem;
+  font-size: 1rem;
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.cancel-button button:hover {
+  background-color: #d9363e;
+}
+
+
+/* Responsive */
+@media (max-width: 768px) {
+  .my-orders-order {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .order-controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+}

@@ -3,6 +3,7 @@ version: '3.8'
 
 services:
 
+  ##Microservices config
   user_service:
     build:
       context: ./backend/user_management_microservice
@@ -18,7 +19,78 @@ services:
       - "5000:5000"
     networks:
       - backend-net
+
+  restaurant_service:
+    build: ./restaurant/Restaurant
+    container_name: restaurant_service
+    expose: 
+      - "5006"
+    restart: always
+    networks: 
+      - backend-net
+
+  article_service:
+    build: ./restaurant/Article 
+    container_name: article_service
+    expose:
+      - "5007"
+    restart: always
+    networks:
+      - backend-net 
+
+  delivery_service:
+    build: ./restaurant/delivery-microservice
+    container_name: delivery_service
+    env_file:
+      - ./restaurant/delivery-microservice/.env
+    expose:
+      - "5008"
+    restart: always
+    depends_on:
+      - order_service
+    networks:
+      - backend-net  
+
+  order_service:
+    build: ./restaurant/order_microservice
+    container_name: order_service
+    env_file:
+      - ./restaurant/order_microservice/.env
+    expose:
+      - "5009"
+    restart: always
+    depends_on:
+      - delivery_service
+      - article_service
+      - payment_service
+    networks:
+      - backend-net  
+    
+  payment_service:
+    build: ./restaurant/payment_microservice
+    container_name: payment_service
+    env_file:
+      - ./restaurant/payment_microservice/.env
+    expose:
+      - "5010"
+    restart: always
+    depends_on:
+      - order_service
+    networks:
+      - backend-net  
   
+
+  ##frontend
+  frontend:
+    build: ./restaurant/my-app
+    container_name: frontend
+    expose:
+      - "80"
+    restart: always
+    networks:
+      - backend-net
+
+
   mysql:
     image: mysql:8.0
     container_name: user-management-db
@@ -42,6 +114,12 @@ services:
       - "./nginx/default.conf:/etc/nginx/conf.d/default.conf"
     depends_on:
       - user_service
+      - restaurant_service
+      - article_service
+      - delivery_service
+      - order_service
+      - payment_service
+      - frontend
     networks:
       - backend-net
 

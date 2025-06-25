@@ -5,7 +5,7 @@ import axios from 'axios'
 
 const PlaceOrder = () => {
 
-  const { getTotalCartAmount, food_list, cartItems, url } = useContext(StoreContext)
+  const { getTotalCartAmount, token, food_list, cartItems, url_order } = useContext(StoreContext)
 
   const [data, setData] = useState({
     firstName: "",
@@ -42,7 +42,7 @@ const PlaceOrder = () => {
     }
 
     console.log(orderData);
-    let response = await axios.post("http://localhost:3001/api/orders/create",orderData,{ userId: "68552d7f2952a3f94ea408c7"});
+    let response = await axios.post(url_order + "/api/orders/create", orderData, { headers: { token } });
     if (response.data.success) {
       window.location.href = response.data.checkoutUrl;
     }

@@ -9,7 +9,8 @@ dotenv.config()
 
 const app=express()
 const corsOptions = {
-    origin: "http://localhost:8080"
+    origin: "http://localhost:5173", //5173 for Vite frontend and 8080 for localhost
+    credentials: true
 }
 
 app.use(cors(corsOptions))
@@ -23,9 +24,9 @@ app.get("/", (req, res)=>{
 
 //routes
 app.use("/api/auth", authRoutes)
-app.use("/api", userRoutes)
+app.use("/api/users", userRoutes)
 
-const PORT = 8080
+const PORT = 5000
 
 db.sequelize.sync({alter:true}).then(() => {
     console.log("Database synchronized")

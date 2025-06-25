@@ -23,13 +23,10 @@ export const checkDuplicateUsernameOrEmail = async(req, res, next) =>{
     }
 }
 
-export const checkRolesExisted = (req, res, next) =>{
-    if(req.body.roles){
-        for(const role of req.body.roles){
-            if(!ROLES.includes(role)){
-                return res.status(400).json(`Role ${role} does not exist`)
-            }
-        }
+export const checkRolesIsValid = (req, res, next) =>{
+    const {role} = req.body
+    if(role && !ROLES.includes(role)){
+        return res.status(400).json({message: `Role ${role} does not exist`})
     }
     next()
 }

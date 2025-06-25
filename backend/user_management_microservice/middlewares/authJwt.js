@@ -5,7 +5,7 @@ import dotenv from "dotenv"
 dotenv.config()
 const JWT_SECRET = process.env.JWT_SECRET_KEY
 
-const{user: User, role: Role} = db
+const{user: User} = db
 
 export const verifyToken = async(req, res, next) =>{
     const token = req.headers["x-access-token"] || req.headers["authorization"]
@@ -20,6 +20,7 @@ export const verifyToken = async(req, res, next) =>{
         if(!user){
             return res.status(401).json({message:"Unauthorized!"})
         }
+        req.userRole = user.role
         next()
     }catch(error){
         return res.status(401).json({message: "Unauthorized!"})
@@ -27,18 +28,12 @@ export const verifyToken = async(req, res, next) =>{
 }
 
 export const hasRole = (requiredRole) => async(req, res, next) =>{
-    try{
-        const user = await User.findByPk(req.userId)
-        const roles = await user.getRoles()
-        const matchedRole = roles.find((role) =>role.name === requiredRole)
-        
-        if(!user){
-            return res.status(403).json({message:"User not found!"})
-        }
-        if (matchedRole) return next()
-        
-        return res.status(403).json({message:`Require ${requiredRole} role`})
-    }catch(error){
-        res.status(500).json({message: error.message})
+    if(!req.userRole){
+        return res.status(403).json({message: "User not found"})
     }
+
+    if (req.userRole === requiredRole){
+        return next()
+    }
+    return res.status(403).json({message: `Require '${requiredRole}' role`})
 }

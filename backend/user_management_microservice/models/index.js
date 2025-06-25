@@ -15,9 +15,9 @@ db.Sequelize = Sequelize
 db.sequelize = sequelize
 
 db.user = userModel(sequelize, Sequelize)
-db.role = roleModel(sequelize, Sequelize)
+//db.role = roleModel(sequelize, Sequelize)
 
-db.role.belongsToMany(db.user, {
+/*db.role.belongsToMany(db.user, {
     through: "user_roles",
     foreignKey:"roleId",
     otherKey: "userId",
@@ -29,8 +29,8 @@ db.user.belongsToMany(db.role, {
     foreignKey:"userId",
     otherKey:"roleId",
     as:"roles"
-})
+})*/
 
-db.ROLES = ["customer", "restaurant_owner", "delivery_driver", "sales_analytics", "3rd_party"]
+db.ROLES = ["customer", "restaurant_owner", "delivery_driver", "sales_team", "third_party_developer"]
 
 export default db

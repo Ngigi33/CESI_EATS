@@ -2,18 +2,21 @@
 import { createContext, useEffect, useState } from "react";
 import { articleService } from "../services/apiService";
 import axios from "axios";
-import "../services/url.js";
+
 
 export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
 
-    //for user management service
 
-    const url = "http://localhost:5000/api/auth" //backend url from docker
-    const [token, setToken] = useState({})
+    //Order microservice url ***************
+    const url_order = 'http://localhost:3001';
+    //************************************ */
 
-    // 1. Initialiser cartItems en lisant depuis Local Storage
+
+    const [token, setToken] = useState("");
+
+    // 1. Initialize cartItems by reading from Local Storage
     const [cartItems, setCartItems] = useState(() => {
         try {
             const storedCart = localStorage.getItem('cartItems');
@@ -28,37 +31,60 @@ const StoreContextProvider = (props) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // 2. Sauvegarder cartItems dans Local Storage chaque fois qu'il change
+
+
+    //2. Save cartItems to Local Storage whenever it changes
     useEffect(() => {
         try {
             localStorage.setItem('cartItems', JSON.stringify(cartItems));
         } catch (error) {
             console.error("Failed to save cartItems to localStorage", error);
         }
-    }, [cartItems]); // Ce useEffect s'exécute chaque fois que cartItems change
+    }, [cartItems]); // This useEffect runs every time cartItems change
 
-    const addToCart = (itemId) => {
+
+
+    useEffect(() => {
+        async function loadData() {
+            if (localStorage.getItem("token")) {
+                setToken(localStorage.getItem("token"));
+                await loadCartData(localStorage.getItem("token"));
+            }
+        }
+        loadData();
+    }, [])
+
+
+
+    const addToCart = async (itemId) => {
         if (!cartItems[itemId]) {
             setCartItems((prev) => ({ ...prev, [itemId]: 1 }));
         } else {
             setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] + 1 }));
         }
-        if(token)
-        {
-            // await axios.post(url_order+"/api/cart/add",{itemId}),Headers
+        if (token) {
+            await axios.post(url_order + "/api/cart/add", { itemId }, { headers: { token } });
         }
     };
 
-    const removeFromCart = (itemId) => {
-        // S'assurer que la quantité ne descend pas en dessous de zéro
+    const removeFromCart = async (itemId) => {
         setCartItems((prev) => {
             const newCart = { ...prev, [itemId]: prev[itemId] - 1 };
             if (newCart[itemId] <= 0) {
-                delete newCart[itemId]; // Supprime l'article si la quantité est 0 ou moins
+                delete newCart[itemId]; // Deletes the item if the quantity is 0 or less
             }
+
             return newCart;
         });
+        if (token) {
+            await axios.post(url_order + "/api/cart/remove", { itemId }, { headers: { token } });
+        }
     };
+
+    const loadCartData = async (token) => {
+        const response = await axios.post(url_order + "/api/cart/get", {}, { headers: { token } });
+        setCartItems(response.data.cartData);
+    }
 
     const getTotalCartAmount = () => {
         let totalAmount = 0;
@@ -74,11 +100,7 @@ const StoreContextProvider = (props) => {
     };
 
     //get token from localStorage
-    useEffect(()=>{
-        if(localStorage.getItem("token")){
-            setToken(localStorage.getItem("token"))
-        }
-    }, [])
+
 
     const getUniqueCategories = () => {
         const categories = [...new Set(food_list.map(food => food.category))];
@@ -92,8 +114,8 @@ const StoreContextProvider = (props) => {
             const response = await articleService.getAllArticles();
             if (response.success && Array.isArray(response.data)) {
                 const transformedData = response.data.map(item => {
-                    // Si l'image est déjà une URL complète, l'utiliser telle quelle
-                    // Sinon, construire l'URL complète
+                    // If the image is already a full URL, use it as is.
+                    // Otherwise, construct the full URL.
                     const imageUrl = item.image.startsWith('http')
                         ? item.image
                         : `http://localhost:${process.env.PORT || 4005}/images/food/${item.image}`;
@@ -137,6 +159,7 @@ const StoreContextProvider = (props) => {
         removeFromCart,
         getTotalCartAmount,
         getUniqueCategories,
+        loadCartData,
         loading,
         error,
         refreshFoodList: fetchFoodList,

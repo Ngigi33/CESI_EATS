@@ -1,0 +1,24 @@
+.delivery-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  color: #333;
+}
+
+.delivery-container h1,
+.delivery-container h2 {
+  color: tomato;
+  margin-top: 20px;
+}
+
+.delivery-container ul {
+  padding-left: 20px;
+  margin-bottom: 20px;
+}
+
+.delivery-container a {
+  color: tomato;
+  text-decoration: underline;
+}

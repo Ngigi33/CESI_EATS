@@ -21,6 +21,10 @@ import {ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import Account from './pages/Account/Account'
 
+import About from './pages/About/About';
+import Delivery from './pages/Delivery/Delivery';
+import PrivacyPolicy from './pages/PrivacyPolicy/PrivacyPolicy';
+
 const App = () => {
   const [showLogin, setShowLogin] = useState(false)
   const location = useLocation()
@@ -43,6 +47,9 @@ const App = () => {
           <Route path='/support' element={<Support />} />
           <Route path='/account' element={<Account />} />
           <Route path='/resto' element={<RestaurantOwnerDashboard setShowLogin={setShowLogin} />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/delivery-page" element={<Delivery />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         </Routes>
       </div>
 

@@ -1,74 +1,104 @@
 import React, { useState, useEffect } from 'react';
 import { Package, MapPin, Check, X, Clock, Navigation, Phone, Star, TrendingUp } from 'lucide-react';
 import './DeliveryDashboard.css';
+import axios from 'axios';
+import { toast } from "react-toastify"
 
 const DeliveryDashboard = () => {
   const [activeTab, setActiveTab] = useState('available');
   const [deliveries, setDeliveries] = useState({
-    available: [
-      {
-        id: 1,
-        restaurant: 'Pizza Palace',
-        customer: 'Jean Dupont',
-        address: '123 Rue de la Paix, Paris',
-        distance: '2.5 km',
-        payment: '15.50€',
-        time: '30 min',
-        items: 3
-      },
-      {
-        id: 2,
-        restaurant: 'Burger King',
-        customer: 'Marie Martin',
-        address: '456 Avenue des Champs, Paris',
-        distance: '1.8 km',
-        payment: '22.30€',
-        time: '25 min',
-        items: 2
-      }
-    ],
-    active: [
-      {
-        id: 3,
-        restaurant: 'Sushi Tokyo',
-        customer: 'Pierre Moreau',
-        address: '789 Boulevard Saint-Germain, Paris',
-        distance: '3.2 km',
-        payment: '45.00€',
-        status: 'picked_up',
-        estimatedTime: '15 min'
-      }
-    ],
-    completed: [
-      {
-        id: 4,
-        restaurant: 'McDonald\'s',
-        customer: 'Sophie Leroy',
-        address: '321 Rue de Rivoli, Paris',
-        payment: '18.90€',
-        rating: 5,
-        completedAt: '14:30'
-      }
-    ]
+    available: [],
+    active: [],
+    completed: []
   });
-
   const [stats, setStats] = useState({
-    todayEarnings: 125.50,
-    deliveriesCompleted: 8,
-    averageRating: 4.8,
-    totalDistance: 45.2
+    todayEarnings: 0,
+    deliveriesCompleted: 0,
+    averageRating: 5,
+    totalDistance: 0
   });
 
-  const acceptDelivery = (deliveryId) => {
+  // const [orders, setOrders] = useState([]);
+
+  const fetchAllOrders = async () => {
+
+    try {
+      const response = await axios.get("http://localhost:3001/api/orders/list");
+      if (response.data.success) {
+        const allOrders = response.data.data;
+        const categorized = {
+          available: [],
+          active: [],
+          completed: []
+        };
+        console.log(response.data);
+        allOrders.forEach(order => {
+          const delivery = {
+            id: order._id,
+            restaurant:order.restaurantName,//"N/A", // Or fetch restaurant name if available
+            customer: order.userId,
+            address: `${order.address?.street || "Unknown Address"}`,
+            distance: "N/A", // Could be calculated or mocked
+            payment: `${order.amount.toFixed(2)}€`,
+            time: "N/A", // Estimate or remove
+            items: order.items?.length || 0,
+            driverstatus: order.driverstatus
+          };
+
+          if (order.driverstatus === "Pending") {
+            categorized.available.push(delivery);
+          } else if (order.driverstatus === "Accepted" || order.driverstatus === "Picked_Up") {
+            categorized.active.push(delivery);
+          }
+          else if (order.driverstatus === "Delivered") {
+            categorized.completed.push({
+              ...delivery,
+              completedAt: new Date(order.date).toLocaleTimeString('en-GB', {
+                hour: '2-digit',
+                minute: '2-digit'
+              }),
+              rating: 5
+            });
+          }
+
+
+
+        });
+        setDeliveries(categorized);
+      }
+      else {
+        toast.error("Failed to fetch orders");
+      }
+
+    }
+    catch (error) {
+      toast.error("API error: " + error.message);
+    }
+
+  };
+
+
+  useEffect(() => {
+    fetchAllOrders();
+
+  }, [])
+
+
+
+  const acceptDelivery = async (deliveryId) => {
     const delivery = deliveries.available.find(d => d.id === deliveryId);
     if (delivery) {
-      setDeliveries(prev => ({
-        ...prev,
-        available: prev.available.filter(d => d.id !== deliveryId),
-        active: [...prev.active, { ...delivery, status: 'accepted' }]
-      }));
+      const success = await updateDriverStatus(deliveryId, 'Accepted');
+      if (success) {
+        setDeliveries(prev => ({
+          ...prev,
+          available: prev.available.filter(d => d.id !== deliveryId),
+          active: [...prev.active, { ...delivery, status: 'accepted' }]
+        }));
+      }
     }
   };
+
 
   const rejectDelivery = (deliveryId) => {
     setDeliveries(prev => ({
@@ -76,35 +106,63 @@ const DeliveryDashboard = () => {
       available: prev.available.filter(d => d.id !== deliveryId)
     }));
   };
-
-  const updateDeliveryStatus = (deliveryId, status) => {
-    setDeliveries(prev => ({
-      ...prev,
-      active: prev.active.map(d =>
-        d.id === deliveryId ? { ...d, status } : d
-      )
-    }));
-  };
-
-  const completeDelivery = (deliveryId) => {
-    const delivery = deliveries.active.find(d => d.id === deliveryId);
-    if (delivery) {
+  const updateDeliveryStatus = async (deliveryId, status) => {
+    const success = await updateDriverStatus(deliveryId, status === 'picked_up' ? 'Picked_Up' : status);
+    if (success) {
       setDeliveries(prev => ({
         ...prev,
-        active: prev.active.filter(d => d.id !== deliveryId),
-        completed: [...prev.completed, {
-          ...delivery,
-          rating: 5,
-          completedAt: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
-        }]
-      }));
-      setStats(prev => ({
-        ...prev,
-        todayEarnings: prev.todayEarnings + parseFloat(delivery.payment.replace('€', '')),
-        deliveriesCompleted: prev.deliveriesCompleted + 1
+        active: prev.active.map(d =>
+          d.id === deliveryId ? { ...d, status } : d
+        )
       }));
     }
   };
+
+
+  const completeDelivery = async (deliveryId) => {
+    const delivery = deliveries.active.find(d => d.id === deliveryId);
+    if (delivery) {
+      const success = await updateDriverStatus(deliveryId, 'Delivered');
+      if (success) {
+        setDeliveries(prev => ({
+          ...prev,
+          active: prev.active.filter(d => d.id !== deliveryId),
+          completed: [...prev.completed, {
+            ...delivery,
+            rating: 5,
+            completedAt: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
+          }]
+        }));
+        setStats(prev => ({
+          ...prev,
+          todayEarnings: prev.todayEarnings + parseFloat(delivery.payment.replace('€', '')),
+          deliveriesCompleted: prev.deliveriesCompleted + 1
+        }));
+      }
+    }
+  };
+
+
+  const updateDriverStatus = async (orderID, status) => {
+    try {
+      const response = await axios.patch('http://localhost:3001/api/orders/driver_status', {
+        orderID,
+        driverstatus: status
+      });
+
+      if (response.data.success) {
+        toast.success("Status updated");
+        return true;
+      } else {
+        toast.error("Failed to update status");
+        return false;
+      }
+    } catch (error) {
+      toast.error("Error updating status: " + error.message);
+      return false;
+    }
+  };
+
 
   const DeliveryCard = ({ delivery, type }) => (
     <div className="delivery-card">
@@ -195,6 +253,7 @@ const DeliveryDashboard = () => {
       </div>
     </div>
   );
+
 
   return (
     <div className="dashboard-container">
@@ -319,6 +378,11 @@ const DeliveryDashboard = () => {
       </div>
     </div>
   );
-};
+
+
+}
+
+
+
 
 export default DeliveryDashboard;

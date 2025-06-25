@@ -1,6 +1,8 @@
 
 import { createContext, useEffect, useState } from "react";
 import { articleService } from "../services/apiService";
+import axios from "axios";
+import "../services/url.js";
 
 export const StoreContext = createContext(null);
 
@@ -40,6 +42,10 @@ const StoreContextProvider = (props) => {
             setCartItems((prev) => ({ ...prev, [itemId]: 1 }));
         } else {
             setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] + 1 }));
+        }
+        if(token)
+        {
+            // await axios.post(url_order+"/api/cart/add",{itemId}),Headers
         }
     };
 

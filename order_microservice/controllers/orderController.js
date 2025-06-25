@@ -1,15 +1,15 @@
 import orderModel from '../models/orderModel.js';
-import userModel from '../models/userModel.js';
 import axios from 'axios';
 
 
 export const createOrder = async (req, res) => {
 
   try {
+
     // 1. Create order in MongoDB
     const new_order = new orderModel({
-      // userId: req.body.userId,
-      userId: '68552d7f2952a3f94ea408c7',
+      userId: req.body.userId,
+      // userId: '68552d7f2952a3f94ea408c7',
       items: req.body.items,
       amount: req.body.amount,
       address: req.body.address
@@ -18,8 +18,12 @@ export const createOrder = async (req, res) => {
     // console.log('🔍 Order payload:', req.body);
     await new_order.save();
 
-    // 2. Clear the user's cart
-    await userModel.findByIdAndUpdate(req.body.userId, { cartData: {} });
+
+    await cartModel.findOneAndUpdate(
+      { userId: req.body.userId },
+      { $set: { cartData: {} } },
+      { new: true }
+    );
 
     // 3. Call the payment microservice to create a payment intent
     const paymentResponse = await axios.post('http://localhost:5002/api/payments/createCheckoutSession', {

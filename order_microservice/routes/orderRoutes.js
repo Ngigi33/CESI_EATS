@@ -10,11 +10,11 @@ import authMiddleware from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.post('/create', createOrder);
+router.post('/create', authMiddleware, createOrder);
 router.post('/verify', verifyOrder);
-router.patch('/status', updateOrderStatus);
+router.patch('/status', authMiddleware, updateOrderStatus);
 router.get('/:id', getOrderById);
-router.post('/userOrders', getOrdersByUser);
+router.post('/userOrders', authMiddleware, getOrdersByUser);
 
 // router.post('/', authMiddleware, createOrder);
 // router.patch('/:id/status', authMiddleware, updateOrderStatus);

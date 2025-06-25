@@ -51,9 +51,15 @@ export const createOrder = async (req, res) => {
 
 };
 
-export const getOrderById = async (req, res) => {
-
-};
+export const listOrders = async (req, res) =>{
+  try{
+    const orders = await orderModel.find({})
+    res.json({success:true, data:orders})
+  }catch(error){
+    console.log(error)
+    res.json({success:false, message: error.message})
+  }
+}
 
 
 export const verifyOrder = async (req, res) => {
@@ -62,7 +68,7 @@ export const verifyOrder = async (req, res) => {
 
   try {
     if (success == "true") {
-      await orderModel.findByIdAndUpdate(orderID, { payment: true });
+      await orderModel.findByIdAndUpdate(orderID, { payment: true }, {new:true});
       res.json({ success: true, message: "Paid" });
     }
     else {
@@ -78,7 +84,6 @@ export const verifyOrder = async (req, res) => {
 };
 
 export const updateOrderStatus = async (req, res) => {
-
 
   try {
     await orderModel.findByIdAndUpdate(req.body.orderId, { status: req.body.status });
@@ -104,6 +109,24 @@ export const getOrdersByUser = async (req, res) => {
   }
 };
 
+export const updateDriverStatus = async(req, res) =>{
+  try{
+    await orderModel.findByIdAndUpdate(req.body.orderID, {driverstatus: req.body.driverstatus})
+    res.json({success:true, message: "Status updated"})
+  }
+  catch(error){
+    res.status(500).json({error: 'Status update failed'})
+  }
+}
+
+export const deleteOrder = async (req,res) => {
+  try{
+    await orderModel.findByIdAndUpdate(req.body.orderID, {status: req.body.status})
+    res.json({success:true, messsage: "Status updated"})
+  } catch(error){
+    res.status(500).json({error: 'Status update failed'})
+  }
+}
 
 
 

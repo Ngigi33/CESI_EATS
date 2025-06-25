@@ -19,10 +19,10 @@ const MyOrders = () => {
 
   const handleCancelOrder = async (orderID, status) => {
     try {
-      const response = await axios.patch(url_order + "api/orders/status", {
+      const response = await axios.patch(url_order + "/api/orders/status", {
         orderID: orderID,
         status: status
-      });
+      }, {headers: {Authorization: `Bearer ${token}`}});
 
       if (response.data.success) {
         alert("Order cancelled successfully!");

@@ -8,18 +8,18 @@ import axios from 'axios';
 
 const MyOrders = () => {
 
-  const { url_orders, token } = useContext(StoreContext);
+  const { url_order, token } = useContext(StoreContext);
   const [data, setData] = useState([]);
 
   const fetchOrders = async () => {
-    const response = await axios.post(url_orders + "/api/orders/userOrders", {}, { headers: { token } });
+    const response = await axios.post(url_order + "/api/orders/userOrders", {}, { headers: { Authorization: `Bearer ${token}` } });
     setData(response.data.data);
     console.log(response.data.data)
   }
 
   const handleCancelOrder = async (orderID, status) => {
     try {
-      const response = await axios.patch(url_orders + "api/orders/status", {
+      const response = await axios.patch(url_order + "api/orders/status", {
         orderID: orderID,
         status: status
       });

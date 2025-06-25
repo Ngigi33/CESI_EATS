@@ -11,18 +11,22 @@ const Verify = () => {
     const orderID = searchParams.get("orderID");
 
     //console.log(success,orderID);
-    const { url } = useContext(StoreContext);
+    const { url_order, clearCart } = useContext(StoreContext);
     const navigate = useNavigate();
 
     const verifyPayment = async () => {
-        const response = await axios.post("http://localhost:3001/api/orders/verify",{ success, orderID });
-
-        if (response.data.success) {
-            navigate("/Myorders");
-            console.log(success);
-        }
-        else {
-            navigate("/");
+        try{
+            const response = await axios.post("http://localhost:3001/api/orders/verify",{ success, orderID });
+            if(response.data.success){
+                await clearCart()
+                navigate("/MyOrders")
+                console.log("Payment success:", success)
+            }else{
+                navigate("/")
+            }
+        }catch(error){
+            console.error("Verification failed:", error.message)
+            navigate("/")
         }
     }
 

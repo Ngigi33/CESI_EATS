@@ -8,11 +8,12 @@ import { StoreContext } from '../../context/StoreContext'
 
 const roleToRouteMap = { //mapping out routes
   customer:"/",
-  restaurant_owner: "/resto",
-  delivery_driver:"./dashboard/delivery-driver",
+  restaurant_owner: "/restaurant_owner",
+  delivery_driver:"/deliverydashboard",
   sales_team:"/sales-team",
   third_party_developer:"/third-party"
 }
+
 const LoginPopup = ({setShowLogin}) => {
 
   const navigate = useNavigate()
@@ -63,14 +64,18 @@ const LoginPopup = ({setShowLogin}) => {
 
           //decode token for role
           let userRole = res.data.roles || null;
-          if(!userRole && token){
+          let userId = res.data.id ||null;
+
+          if(!userRole || !userId && token){
             const decoded = jwtDecode(token)
             userRole = decoded.role || (decoded.roles && decoded.roles[0])
+            userId = userId || decoded.id
           }
           if(!userRole) userRole = "customer"
           
           localStorage.setItem("userRole", userRole)
           localStorage.setItem("user", JSON.stringify(res.data.username))
+          localStorage.setItem("userId", userId)
 
           const route = roleToRouteMap[userRole] || "/"
           navigate(route)

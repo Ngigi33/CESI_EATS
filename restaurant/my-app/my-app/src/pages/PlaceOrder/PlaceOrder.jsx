@@ -42,7 +42,7 @@ const PlaceOrder = () => {
     }
 
     console.log(orderData);
-    let response = await axios.post(url_order + "/api/orders/create", orderData, { headers: { token } });
+    let response = await axios.post(url_order + "/api/orders/create", orderData, { headers: { Authorization: `Bearer ${token}` } });
     if (response.data.success) {
       window.location.href = response.data.checkoutUrl;
     }

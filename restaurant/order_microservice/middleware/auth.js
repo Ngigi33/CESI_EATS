@@ -1,15 +1,15 @@
 import jwt from 'jsonwebtoken';
 
 const authMiddleware = async (req, res, next) => {
-  const { token } = req.headers;
+  const token = req.headers['x-access-token'] || req.headers['authorization']
 
   if (!token) {
     return res.status(401).json({ success: false, message: "Not authorized, login again" });
   }
 
   try {
-    const token_decode = jwt.verify(token, process.env.JWT_SECRET);
-    req.body.userId = token_decode.userId;
+    const token_decode = jwt.verify(token.replace("Bearer ", ""), process.env.JWT_SECRET);
+    req.body.userId = token_decode.id;
     next();
   } catch (error) {
     console.error("JWT verification error:", error);

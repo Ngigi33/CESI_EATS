@@ -1,5 +1,6 @@
 import orderModel from '../models/orderModel.js';
 import axios from 'axios';
+import cartModel from '../models/cartModel.js'
 
 
 export const createOrder = async (req, res) => {
@@ -80,7 +81,7 @@ export const updateOrderStatus = async (req, res) => {
 
 
   try {
-    await orderModel.findByIdAndUpdate(req.body.orderID, { status: req.body.status });
+    await orderModel.findByIdAndUpdate(req.body.orderId, { status: req.body.status });
     res.json({ success: true, message: "Status updated" });
   }
 

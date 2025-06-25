@@ -66,7 +66,7 @@ const StoreContextProvider = (props) => {
             setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] + 1 }));
         }
         if (token) {
-            await axios.post(url_order + "/api/cart/add", { itemId }, { headers: { token } });
+            await axios.post(url_order + "/api/cart/add", { itemId }, { headers: { Authorization: `Bearer ${token}` } });
         }
     };
 
@@ -80,12 +80,12 @@ const StoreContextProvider = (props) => {
             return newCart;
         });
         if (token) {
-            await axios.post(url_order + "/api/cart/remove", { itemId }, { headers: { token } });
+            await axios.post(url_order + "/api/cart/remove", { itemId }, { headers: { Authorization: `Bearer ${token}` } });
         }
     };
 
     const loadCartData = async (token) => {
-        const response = await axios.post(url_order + "/api/cart/get", {}, { headers: { token } });
+        const response = await axios.post(url_order + "/api/cart/get", {}, { headers: { Authorization: `Bearer ${token}` } });
         setCartItems(response.data.cartData);
     }
 
@@ -102,7 +102,11 @@ const StoreContextProvider = (props) => {
         return totalAmount;
     };
 
-    //get token from localStorage
+    const clearCart = async() =>{
+        setCartItems({})
+        localStorage.removeItem('cartItems')
+    }
+
 
     const getUniqueCategories = () => {
         const categories = [...new Set(food_list.map(food => food.category))];
@@ -169,7 +173,8 @@ const StoreContextProvider = (props) => {
         auth_url,
         url_order,
         token,
-        setToken
+        setToken,
+        clearCart
     };
 
     return (

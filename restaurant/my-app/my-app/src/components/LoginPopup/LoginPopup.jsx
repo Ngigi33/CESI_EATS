@@ -16,7 +16,7 @@ const roleToRouteMap = { //mapping out routes
 const LoginPopup = ({setShowLogin}) => {
 
   const navigate = useNavigate()
-  const {url, setToken} = useContext(StoreContext)
+  const {auth_url, setToken} = useContext(StoreContext)
 
     const [currState,setCurrState] = useState("Login")
     const [formData, setFormData] = useState({
@@ -42,7 +42,7 @@ const LoginPopup = ({setShowLogin}) => {
     const onLogin = async (e) => {
       e.preventDefault();
       try {
-        let newUrl = url;
+        let newUrl = auth_url;
         let payload = {}
         if (currState === 'Login') {
           newUrl += "/signin";// backend login

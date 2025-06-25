@@ -8,12 +8,9 @@ export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
 
+    const url_order = 'http://localhost:3001'; 
 
-    //Order microservice url ***************
-    const url_order = 'http://localhost:3001';
-    //************************************ */
-
-
+    const auth_url = "http://localhost:5000/api/auth" //user management url from docker
     const [token, setToken] = useState("");
 
     // 1. Initialize cartItems by reading from Local Storage

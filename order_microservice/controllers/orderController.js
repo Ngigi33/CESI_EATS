@@ -44,7 +44,7 @@ export const createOrder = async (req, res) => {
     });
   }
   catch (error) {
-    console.error('❌ Error creating order:', error.message);
+    console.error('Error creating order:', error.message);
     res.status(500).json({ error: 'Failed to create order' });
   }
 
@@ -70,7 +70,7 @@ export const verifyOrder = async (req, res) => {
     }
   }
   catch (error) {
-    console.error('❌ Error paying for  order:', error.message);
+    console.error('Error paying for  order:', error.message);
     res.status(500).json({ error: 'Payment Failed' });
   }
 
@@ -85,7 +85,7 @@ export const updateOrderStatus = async (req, res) => {
   }
 
   catch (error) {
-    console.error('❌ Error paying for  order:', error.message);
+    console.error(' Error updating status:', error.message);
     res.status(500).json({ error: 'Status update failed' });
   }
 
@@ -98,7 +98,7 @@ export const getOrdersByUser = async (req, res) => {
   }
   catch (error) {
     console.log(error);
-    console.error('❌ Error paying for  order:', error.message);
+    console.error(' Error getting list of orders:', error.message);
     res.status(500).json({ error: 'Payment Failed' });
   }
 };

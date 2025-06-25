@@ -12,13 +12,13 @@ const OrderCard = ({ order, isActive, onToggleActive, onCancelOrder }) => {
         onClick={() => onToggleActive(order.id)}
       >
         <div className="order-info">
-          <div className="order-id">Commande #{order.id.substring(order.id.length - 4)}</div> {/* Affiche les 4 derniers caractères */}
+          <div className="order-id">Order #{order.id.substring(order.id.length - 4)}</div> {/* Displays last 4 characters */}
           <div className="order-restaurant">{order.restaurant}</div>
         </div>
         <div className="order-details">
-          {/* Affiche la date et l'heure séparément */}
+          {/* Displays date and time separately */}
           <div className="order-date">
-            {order.date} à {order.time}
+            {order.date} at {order.time}
           </div>
           <div className="order-price">{order.total}</div>
           <div className={statusClassName}>{order.status}</div>
@@ -28,19 +28,19 @@ const OrderCard = ({ order, isActive, onToggleActive, onCancelOrder }) => {
       {isActive && (
         <div className="order-expanded">
           <div className="order-items">
-            <h4 className="items-title">Articles Commandés:</h4>
+            <h4 className="items-title">Ordered Items:</h4>
             {order.items && order.items.length > 0 ? (
               order.items.map((item, index) => (
                 <OrderItem key={index} item={item} />
               ))
             ) : (
-              <p>Aucun article.</p>
+              <p>No items.</p>
             )}
           </div>
 
           <div className="order-actions">
             <div className="delivery-info">
-              <span className="delivery-label">Livraison Estimée:</span>
+              <span className="delivery-label">Delivery Time:</span>
               <span className="delivery-time">{order.deliveryTime}</span>
             </div>
 
@@ -49,13 +49,13 @@ const OrderCard = ({ order, isActive, onToggleActive, onCancelOrder }) => {
                 className="cancel-button"
                 onClick={() => onCancelOrder(order.id)}
               >
-                Annuler la Commande
+                Cancel Order
               </button>
             )}
 
             {order.statusClass === 'delivered' && (
               <button className="reorder-button">
-                Recommander
+                Make Another Order
               </button>
             )}
           </div>

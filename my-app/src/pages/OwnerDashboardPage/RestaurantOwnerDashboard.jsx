@@ -1,560 +1,437 @@
 import React, { useState, useEffect } from 'react';
-import {
-  User,
-  Store,
-  Menu,
-  ShoppingBag,
-  Truck,
-  History,
-  BarChart3,
-  UserPlus,
-  Bell,
-  Plus,
-  Edit,
-  Trash2,
-  Eye,
-  Check,
-  X,
-  Search,
-  Filter,
-  Settings
-} from 'lucide-react';
-import './RestaurantOwnerDashboard.css'; // Import the CSS file
+import { ChefHat, Utensils, BookText, ShoppingCart, TrendingUp, Clock, CheckCircle, PlusCircle } from 'lucide-react'; // Added PlusCircle icon
+import DashboardContent from './DashboardContent';
+import Modal from '../../components/Modal/Modal'; // Import the new Modal component
+import './RestaurantOwnerDashboard.css';
+
+// --- Placeholder for the Restaurant ID ---
+const RESTAURANT_ID = '6859069c30267415c5aeeff7'; // Using the latest ID provided
 
 const RestaurantOwnerDashboard = () => {
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [restaurants, setRestaurants] = useState([]);
+  const [activeTab, setActiveTab] = useState('new_orders');
+  const [orders, setOrders] = useState({
+    new_orders: [],
+    in_progress_orders: [],
+    completed_orders: []
+  });
   const [articles, setArticles] = useState([]);
   const [menus, setMenus] = useState([]);
-  const [orders, setOrders] = useState([]);
-  const [notifications, setNotifications] = useState([]);
-  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState('');
-  const [currentItem, setCurrentItem] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Simulated owner data
-  const ownerId = 1;
-  const ownerInfo = {
-    id: 1,
-    name: "Pierre Dubois",
-    email: "pierre@cesieats.com",
-    phone: "+33 6 12 34 56 78",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
-  };
+  // State for modal visibility
+  const [showAddArticleModal, setShowAddArticleModal] = useState(false);
+  const [showAddMenuModal, setShowAddMenuModal] = useState(false);
 
-  // Mock data initialization
+  // States for new article/menu form data
+  const [newArticleData, setNewArticleData] = useState({ name: '', description: '', price: '', image: '', type: '' });
+  const [newMenuData, setNewMenuData] = useState({ name: '', description: '', category: '', price: '' }); // Simplified articles for now
+
+  // --- Fetch Data from Microservices ---
   useEffect(() => {
-    // Simulate API calls to microservices
-    setRestaurants([
-      {
-        id: 1,
-        name: "Le Petit Bistro",
-        address: "123 Rue de la Paix, Lyon",
-        status: "open",
-        image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=300&h=200&fit=crop",
-        opening: "09:00",
-        closing: "22:00",
-        tags: ["français", "bistro", "traditionnel"],
-        description: "Cuisine française traditionnelle",
-        articles: []
+    const fetchRestaurantData = async () => {
+      try {
+        setLoading(true);
+
+        // --- Fetch Articles for the Restaurant ---
+        const articlesRes = await fetch('http://localhost:4005/articles');
+        if (!articlesRes.ok) throw new Error('Failed to fetch articles');
+        const articlesData = await articlesRes.json();
+        // Assuming articlesData.data is an array and each object has restaurantId
+        const restaurantArticles = articlesData.data.filter(article => article.restaurantId === RESTAURANT_ID);
+        setArticles(restaurantArticles);
+
+        // --- Fetch Menus for the Restaurant ---
+        const menusRes = await fetch('http://localhost:4002/api/menu');
+        if (!menusRes.ok) throw new Error('Failed to fetch menus');
+        const allMenusData = await menusRes.json();
+        const restaurantMenus = allMenusData.filter(menu => menu.restaurantId === RESTAURANT_ID);
+        setMenus(restaurantMenus);
+
+        // --- Fetch Orders for the Restaurant ---
+        const ordersRes = await fetch(`http://localhost:4003/orders`);
+        if (!ordersRes.ok) throw new Error('Failed to fetch orders');
+        const allOrdersData = await ordersRes.json();
+
+        // Categorize orders based on status and filter by restaurantId on the frontend
+        const restaurantOrders = allOrdersData.filter(order => order.restaurantId === RESTAURANT_ID);
+
+        const newOrders = restaurantOrders.filter(order => order.status === 'pending');
+        const inProgressOrders = restaurantOrders.filter(order => order.status === 'preparing' || order.status === 'out_for_delivery');
+        const completedOrders = restaurantOrders.filter(order => order.status === 'completed');
+
+        setOrders({
+          new_orders: newOrders,
+          in_progress_orders: inProgressOrders,
+          completed_orders: completedOrders,
+        });
+
+      } catch (err) {
+        setError("Error fetching dashboard data: " + err.message);
+        console.error("Error fetching dashboard data:", err);
+      } finally {
+        setLoading(false);
       }
-    ]);
-    setArticles([
-      {
-        id: 1,
-        restaurantId: 1,
-        name: "Coq au Vin",
-        image: "https://images.unsplash.com/photo-1551218808-94e220e084d2?w=200&h=150&fit=crop",
-        description: "Plat traditionnel français",
-        price: 18.50,
-        type: "plat"
-      },
-      {
-        id: 2,
-        restaurantId: 1,
-        name: "Tarte Tatin",
-        image: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?w=200&h=150&fit=crop",
-        description: "Dessert aux pommes caramélisées",
-        price: 8.50,
-        type: "dessert"
-      }
-    ]);
-    setMenus([
-      {
-        id: 1,
-        restaurantId: 1,
-        name: "Menu du Chef",
-        description: "Notre sélection de plats signature",
-        category: "menu-complet",
-        articles: [1, 2],
-        price: 25.00
-      }
-    ]);
-    setOrders([
-      {
-        id: 1,
-        userId: 101,
-        deliveryNumber: 2024001,
-        restaurantId: 1,
-        address: "456 Avenue Victor Hugo, Lyon",
-        created: new Date().toISOString(),
-        status: "pending",
-        accepted: null,
-        price: 25.00,
-        menus: [1],
-        articles: []
-      },
-      {
-        id: 2,
-        userId: 102,
-        deliveryNumber: 2024002,
-        restaurantId: 1,
-        address: "789 Rue de la République, Lyon",
-        created: new Date(Date.now() - 3600000).toISOString(),
-        status: "accepted",
-        accepted: true,
-        price: 18.50,
-        menus: [],
-        articles: [1]
-      }
-    ]);
-    setNotifications([
-      {
-        id: 1,
-        type: "order",
-        message: "Nouvelle commande #2024001",
-        time: "Il y a 5 minutes",
-        read: false
-      },
-      {
-        id: 2,
-        type: "delivery",
-        message: "Livraison #2024002 terminée",
-        time: "Il y a 1 heure",
-        read: true
-      }
-    ]);
-  }, []);
+    };
 
-  const openModal = (type, item = null) => {
-    setModalType(type);
-    setCurrentItem(item);
-    setShowModal(true);
-  };
+    fetchRestaurantData();
+  }, [RESTAURANT_ID]); // Added RESTAURANT_ID to dependency array
 
-  const closeModal = () => {
-    setShowModal(false);
-    setCurrentItem(null);
-    setModalType('');
-  };
-
-  const handleOrderAction = (orderId, action) => {
-    setOrders(orders.map(order =>
-      order.id === orderId
-        ? { ...order, status: action, accepted: action === 'accepted' }
-        : order
-    ));
-  };
-
-  const stats = {
-    totalOrders: orders.length,
-    pendingOrders: orders.filter(o => o.status === 'pending').length,
-    totalRevenue: orders.reduce((sum, order) => sum + order.price, 0),
-    avgOrderValue: orders.length > 0 ? (orders.reduce((sum, order) => sum + order.price, 0) / orders.length).toFixed(2) : 0
-  };
-
-  const Navigation = () => (
-    <div className="navbar">
-      <div className="navbar-content">
-        <div className="navbar-left">
-          <div className="navbar-logo">CESI EATS</div>
-          <div className="navbar-subtitle">Dashboard Propriétaire</div>
-        </div>
-        <div className="navbar-right">
-          <div className="notification-icon-container">
-            <Bell className="notification-icon" />
-            {notifications.filter(n => !n.read).length > 0 && (
-              <span className="notification-badge">
-                {notifications.filter(n => !n.read).length}
-              </span>
-            )}
-          </div>
-          <div className="user-info">
-            <img
-              src={ownerInfo.avatar}
-              alt="Avatar"
-              className="user-avatar"
-            />
-            <span className="user-name">{ownerInfo.name}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const Sidebar = () => (
-    <div className="sidebar">
-      <nav className="sidebar-nav">
-        {[
-          { id: 'dashboard', label: 'Tableau de bord', icon: BarChart3 },
-          { id: 'account', label: 'Mon compte', icon: User },
-          { id: 'restaurants', label: 'Mes restaurants', icon: Store },
-          { id: 'articles', label: 'Articles', icon: Menu },
-          { id: 'menus', label: 'Menus', icon: Menu },
-          { id: 'orders', label: 'Commandes', icon: ShoppingBag },
-          { id: 'deliveries', label: 'Livraisons', icon: Truck },
-          { id: 'history', label: 'Historique', icon: History },
-          { id: 'statistics', label: 'Statistiques', icon: BarChart3 },
-          { id: 'referral', label: 'Parrainage', icon: UserPlus },
-        ].map(item => {
-          const Icon = item.icon;
-          return (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`sidebar-nav-item ${activeTab === item.id ? 'active' : ''}`}
-            >
-              <Icon className="sidebar-icon" />
-              <span>{item.label}</span>
-            </button>
-          );
-        })}
-      </nav>
-    </div>
-  );
-
-  const DashboardContent = () => (
-    <div className="dashboard-content">
-      <h1 className="dashboard-title">Tableau de bord</h1>
-
-      {/* Stats Cards */}
-      <div className="stats-cards-grid">
-        <div className="stat-card">
-          <div className="stat-card-content">
-            <p className="stat-card-label">Commandes totales</p>
-            <p className="stat-card-value">{stats.totalOrders}</p>
-          </div>
-          <ShoppingBag className="stat-card-icon blue" />
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-card-content">
-            <p className="stat-card-label">En attente</p>
-            <p className="stat-card-value orange">{stats.pendingOrders}</p>
-          </div>
-          <Bell className="stat-card-icon orange" />
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-card-content">
-            <p className="stat-card-label">Chiffre d'affaires</p>
-            <p className="stat-card-value green">{stats.totalRevenue.toFixed(2)}€</p>
-          </div>
-          <BarChart3 className="stat-card-icon green" />
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-card-content">
-            <p className="stat-card-label">Panier moyen</p>
-            <p className="stat-card-value purple">{stats.avgOrderValue}€</p>
-          </div>
-          <Truck className="stat-card-icon purple" />
-        </div>
-      </div>
-
-      {/* Recent Orders */}
-      <div className="recent-orders-card">
-        <div className="recent-orders-header">
-          <h2 className="recent-orders-title">Commandes récentes</h2>
-        </div>
-        <div className="recent-orders-body">
-          <div className="recent-orders-list">
-            {orders.slice(0, 3).map(order => (
-              <div key={order.id} className="recent-order-item">
-                <div>
-                  <p className="recent-order-number">Commande #{order.deliveryNumber}</p>
-                  <p className="recent-order-address">{order.address}</p>
-                  <p className="recent-order-time">{new Date(order.created).toLocaleString()}</p>
-                </div>
-                <div className="recent-order-status-price">
-                  <span className={`order-status-badge ${
-                    order.status === 'pending' ? 'status-pending' :
-                    order.status === 'accepted' ? 'status-accepted' :
-                    'status-default'
-                  }`}>
-                    {order.status === 'pending' ? 'En attente' :
-                      order.status === 'accepted' ? 'Acceptée' : order.status}
-                  </span>
-                  <span className="recent-order-price">{order.price}€</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const AccountContent = () => (
-    <div className="account-content">
-      <div className="content-header">
-        <h1 className="content-title">Mon compte</h1>
-        <button
-          onClick={() => openModal('account')}
-          className="btn btn-primary"
-        >
-          <Edit className="btn-icon" />
-          <span>Modifier</span>
-        </button>
-      </div>
-
-      <div className="account-card">
-        <div className="account-info">
-          <img
-            src={ownerInfo.avatar}
-            alt="Avatar"
-            className="account-avatar"
-          />
-          <div className="account-details">
-            <h2 className="account-name">{ownerInfo.name}</h2>
-            <p className="account-email">{ownerInfo.email}</p>
-            <p className="account-phone">{ownerInfo.phone}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const RestaurantsContent = () => (
-    <div className="restaurants-content">
-      <div className="content-header">
-        <h1 className="content-title">Mes restaurants</h1>
-        <button
-          onClick={() => openModal('restaurant')}
-          className="btn btn-primary"
-        >
-          <Plus className="btn-icon" />
-          <span>Ajouter un restaurant</span>
-        </button>
-      </div>
-
-      <div className="restaurant-grid">
-        {restaurants.map(restaurant => (
-          <div key={restaurant.id} className="restaurant-card">
-            <img
-              src={restaurant.image}
-              alt={restaurant.name}
-              className="restaurant-image"
-            />
-            <div className="restaurant-card-body">
-              <div className="restaurant-card-header">
-                <h3 className="restaurant-name">{restaurant.name}</h3>
-                <span className={`restaurant-status ${
-                  restaurant.status === 'open' ? 'status-open' : 'status-closed'
-                }`}>
-                  {restaurant.status === 'open' ? 'Ouvert' : 'Fermé'}
-                </span>
-              </div>
-              <p className="restaurant-address">{restaurant.address}</p>
-              <p className="restaurant-description">{restaurant.description}</p>
-              <div className="restaurant-card-footer">
-                <div className="restaurant-hours">
-                  {restaurant.opening} - {restaurant.closing}
-                </div>
-                <div className="restaurant-actions">
-                  <button
-                    onClick={() => openModal('restaurant', restaurant)}
-                    className="action-btn edit-btn"
-                  >
-                    <Edit className="btn-icon" />
-                  </button>
-                  <button className="action-btn view-btn">
-                    <Eye className="btn-icon" />
-                  </button>
-                  <button className="action-btn delete-btn">
-                    <Trash2 className="btn-icon" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-
-  const ArticlesContent = () => (
-    <div className="articles-content">
-      <div className="content-header">
-        <h1 className="content-title">Articles</h1>
-        <button
-          onClick={() => openModal('article')}
-          className="btn btn-primary"
-        >
-          <Plus className="btn-icon" />
-          <span>Ajouter un article</span>
-        </button>
-      </div>
-
-      <div className="table-card">
-        <div className="table-wrapper">
-          <table>
-            <thead>
-              <tr className="table-header-row">
-                <th className="table-header-cell">Article</th>
-                <th className="table-header-cell">Type</th>
-                <th className="table-header-cell">Prix</th>
-                <th className="table-header-cell">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {articles.map(article => (
-                <tr key={article.id} className="table-row">
-                  <td className="table-cell">
-                    <div className="article-info">
-                      <img
-                        src={article.image}
-                        alt={article.name}
-                        className="article-image"
-                      />
-                      <div>
-                        <p className="article-name">{article.name}</p>
-                        <p className="article-description">{article.description}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="table-cell">
-                    <span className="article-type-badge">
-                      {article.type}
-                    </span>
-                  </td>
-                  <td className="table-cell article-price">{article.price}€</td>
-                  <td className="table-cell">
-                    <div className="table-actions">
-                      <button
-                        onClick={() => openModal('article', article)}
-                        className="action-btn edit-btn"
-                      >
-                        <Edit className="btn-icon" />
-                      </button>
-                      <button className="action-btn view-btn">
-                        <Eye className="btn-icon" />
-                      </button>
-                      <button className="action-btn delete-btn">
-                        <Trash2 className="btn-icon" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
-
-  const OrdersContent = () => (
-    <div className="orders-content">
-      <h1 className="content-title">Commandes</h1>
-
-      <div className="orders-list">
-        {orders.map(order => (
-          <div key={order.id} className="order-card">
-            <div className="order-header">
-              <div>
-                <h3 className="order-number">Commande #{order.deliveryNumber}</h3>
-                <p className="order-timestamp">{new Date(order.created).toLocaleString()}</p>
-              </div>
-              <div className="order-status-price-container">
-                <span className={`order-status-badge ${
-                  order.status === 'pending' ? 'status-pending' :
-                  order.status === 'accepted' ? 'status-accepted' :
-                  'status-default'
-                }`}>
-                  {order.status === 'pending' ? 'En attente' :
-                    order.status === 'accepted' ? 'Acceptée' : order.status}
-                </span>
-                <span className="order-price">{order.price}€</span>
-              </div>
-            </div>
-
-            <div className="order-details-actions">
-              <div>
-                <p className="order-detail-label">Adresse de livraison:</p>
-                <p className="order-detail-value">{order.address}</p>
-              </div>
-
-              {order.status === 'pending' && (
-                <div className="order-actions-buttons">
-                  <button
-                    onClick={() => handleOrderAction(order.id, 'accepted')}
-                    className="btn btn-success"
-                  >
-                    <Check className="btn-icon" />
-                    <span>Accepter</span>
-                  </button>
-                  <button
-                    onClick={() => handleOrderAction(order.id, 'rejected')}
-                    className="btn btn-danger"
-                  >
-                    <X className="btn-icon" />
-                    <span>Refuser</span>
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'dashboard': return <DashboardContent />;
-      case 'account': return <AccountContent />;
-      case 'restaurants': return <RestaurantsContent />;
-      case 'articles': return <ArticlesContent />;
-      case 'orders': return <OrdersContent />;
-      default:
-        return (
-          <div className="under-development">
-            <h2 className="under-development-title">Section en développement</h2>
-            <p className="under-development-message">Cette fonctionnalité sera bientôt disponible.</p>
-          </div>
-        );
+  // --- Order Management Functions ---
+  const handleValidateOrder = async (orderId) => {
+    try {
+      const response = await fetch(`http://localhost:4003/orders/${orderId}`, {
+        method: 'PUT', // Changed to PUT as per orderRoute.js
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'preparing' }) // Send the status in the body
+      });
+      if (!response.ok) throw new Error('Failed to validate order');
+      alert(`Order ${orderId} validated and status set to 'preparing'.`);
+      window.location.reload();
+    } catch (err) {
+      console.error("Error validating order:", err);
+      alert("Error validating order: " + err.message);
     }
   };
 
+  // --- Article (Item) Management Functions ---
+  const createArticle = async (articleData) => { // Renamed to avoid confusion with handler
+    try {
+      const response = await fetch('http://localhost:4005/articles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...articleData, restaurantId: RESTAURANT_ID })
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create article');
+      }
+      setShowAddArticleModal(false); // Close modal on success
+      setNewArticleData({ name: '', description: '', price: '', image: '', type: '' }); // Clear form
+      window.location.reload(); // Reload to show new item
+    } catch (err) {
+      console.error("Error creating article:", err);
+      alert("Error creating article: " + err.message); // Keep alert for error
+    }
+  };
+
+  const handleUpdateArticle = async (articleId, updatedData) => {
+    try {
+      const response = await fetch(`http://localhost:4005/articles/${articleId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedData)
+      });
+      if (!response.ok) throw new Error('Failed to update article');
+      alert('Article updated successfully!');
+      window.location.reload();
+    } catch (err) {
+      console.error("Error updating article:", err);
+      alert("Error updating article: " + err.message);
+    }
+  };
+
+  const handleDeleteArticle = async (articleId) => {
+    if (!window.confirm("Are you sure you want to delete this article?")) return;
+    try {
+      const response = await fetch(`http://localhost:4005/articles/${articleId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to delete article');
+      alert('Article deleted successfully!');
+      window.location.reload();
+    } catch (err) {
+      console.error("Error deleting article:", err);
+      alert("Error deleting article: " + err.message);
+    }
+  };
+
+  // --- Menu Management Functions ---
+  const createMenu = async (menuData) => { // Renamed to avoid confusion with handler
+    try {
+      const response = await fetch('http://localhost:4002/api/menu', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...menuData, restaurantId: RESTAURANT_ID })
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create menu');
+      }
+      setShowAddMenuModal(false); // Close modal on success
+      setNewMenuData({ name: '', description: '', category: '', price: '' }); // Clear form
+      window.location.reload(); // Reload to show new item
+    } catch (err) {
+      console.error("Error creating menu:", err);
+      alert("Error creating menu: " + err.message); // Keep alert for error
+    }
+  };
+
+  const handleUpdateMenu = async (menuId, updatedData) => {
+    try {
+      const response = await fetch(`http://localhost:4002/api/menu/${menuId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedData)
+      });
+      if (!response.ok) throw new Error('Failed to update menu');
+      alert('Menu updated successfully!');
+      window.location.reload();
+    } catch (err) {
+      console.error("Error updating menu:", err);
+      alert("Error updating menu: " + err.message);
+    }
+  };
+
+  const handleDeleteMenu = async (menuId) => {
+    if (!window.confirm("Are you sure you want to delete this menu?")) return;
+    try {
+      const response = await fetch(`http://localhost:4002/api/menu/${menuId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to delete menu');
+      alert('Menu deleted successfully!');
+      window.location.reload();
+    } catch (err) {
+      console.error("Error deleting menu:", err);
+      alert("Error deleting menu: " + err.message);
+    }
+  };
+
+  // Functions to open/close modals
+  const openAddArticleModal = () => setShowAddArticleModal(true);
+  const closeAddArticleModal = () => setShowAddArticleModal(false);
+  const openAddMenuModal = () => setShowAddMenuModal(true);
+  const closeAddMenuModal = () => setShowAddMenuModal(false);
+
+  if (loading) {
+    return <div className="loading-message">Loading restaurant dashboard data...</div>;
+  }
+
+  if (error) {
+    return <div className="error-message">{error}</div>;
+  }
+
   return (
     <div className="dashboard-container">
-      <Navigation />
-      <div className="main-layout">
-        <Sidebar />
-        <div className="content-area">
-          {renderContent()}
+      <div className="page-content-wrapper">
+        {/* Stats Cards */}
+        <div className="stats-grid">
+          <div className="stat-card">
+            <div className="stat-card-content">
+              <div className="stat-icon-wrapper stat-icon-green">
+                <TrendingUp className="w-6 h-6 text-green-600" />
+              </div>
+              <div className="stat-details">
+                <p className="stat-label">New Orders</p>
+                <p className="stat-value">{orders.new_orders.length}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-card-content">
+              <div className="stat-icon-wrapper stat-icon-blue">
+                <ShoppingCart className="w-6 h-6 text-blue-600" />
+              </div>
+              <div className="stat-details">
+                <p className="stat-label">Total Articles</p>
+                <p className="stat-value">{articles.length}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-card-content">
+              <div className="stat-icon-wrapper stat-icon-yellow">
+                <BookText className="w-6 h-6 text-yellow-600" />
+              </div>
+              <div className="stat-details">
+                <p className="stat-label">Total Menus</p>
+                <p className="stat-value">{menus.length}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-card-content">
+              <div className="stat-icon-wrapper stat-icon-purple">
+                <Clock className="w-6 h-6 text-purple-600" />
+              </div>
+              <div className="stat-details">
+                <p className="stat-label">Orders In Progress</p>
+                <p className="stat-value">{orders.in_progress_orders.length}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Sidebar and Main Content */}
+        <div className="dashboard-content">
+          <aside className="sidebar">
+            <div className="profile-section">
+              <img src="https://via.placeholder.com/80" alt="Restaurant Logo" className="avatar" />
+              <h2>Pizza Palace</h2> {/* Placeholder for restaurant name */}
+              <p>Status: <span className="status-online">Open</span></p> {/* Placeholder */}
+            </div>
+            <nav className="navigation-menu">
+              <ul>
+                <li className={activeTab === 'new_orders' ? 'active' : ''} onClick={() => setActiveTab('new_orders')}>
+                  <ShoppingCart size={18} /> New Orders
+                </li>
+                <li className={activeTab === 'in_progress_orders' ? 'active' : ''} onClick={() => setActiveTab('in_progress_orders')}>
+                  <Clock size={18} /> In Progress
+                </li>
+                <li className={activeTab === 'completed_orders' ? 'active' : ''} onClick={() => setActiveTab('completed_orders')}>
+                  <CheckCircle size={18} /> Completed Orders
+                </li>
+                <li className={activeTab === 'articles' ? 'active' : ''} onClick={() => setActiveTab('articles')}>
+                  <Utensils size={18} /> Article Management
+                </li>
+                <li className={activeTab === 'menus' ? 'active' : ''} onClick={() => setActiveTab('menus')}>
+                  <BookText size={18} /> Menu Management
+                </li>
+                <li>
+                  Settings
+                </li>
+                <li>
+                  Help & Support
+                </li>
+                <li>
+                  Logout
+                </li>
+              </ul>
+            </nav>
+          </aside>
+
+          <DashboardContent
+            activeTab={activeTab}
+            orders={orders}
+            articles={articles}
+            menus={menus}
+            handleValidateOrder={handleValidateOrder}
+            // Pass functions to open modals
+            onAddArticleClick={openAddArticleModal}
+            onAddMenuClick={openAddMenuModal}
+            handleUpdateArticle={handleUpdateArticle}
+            handleDeleteArticle={handleDeleteArticle}
+            handleUpdateMenu={handleUpdateMenu}
+            handleDeleteMenu={handleDeleteMenu}
+          />
         </div>
       </div>
 
-      {/* Notifications Panel */}
-      <div className="notifications-panel">
-        {notifications.filter(n => !n.read).slice(0, 3).map(notification => (
-          <div key={notification.id} className="notification-card">
-            <div className="notification-content">
-              <Bell className="notification-card-icon" />
-              <div className="notification-text">
-                <p className="notification-message">{notification.message}</p>
-                <p className="notification-time">{notification.time}</p>
-              </div>
-              <button className="notification-close-btn">
-                <X className="close-icon" />
-              </button>
-            </div>
+      {/* Add New Article Modal */}
+      <Modal isOpen={showAddArticleModal} onClose={closeAddArticleModal} title="Add New Article">
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          createArticle(newArticleData); // Call the creation function
+        }}>
+          <div className="form-group">
+            <label htmlFor="articleName">Name:</label>
+            <input
+              id="articleName"
+              type="text"
+              value={newArticleData.name}
+              onChange={(e) => setNewArticleData({ ...newArticleData, name: e.target.value })}
+              required
+            />
           </div>
-        ))}
-      </div>
+          <div className="form-group">
+            <label htmlFor="articleDescription">Description:</label>
+            <textarea
+              id="articleDescription"
+              value={newArticleData.description}
+              onChange={(e) => setNewArticleData({ ...newArticleData, description: e.target.value })}
+              required
+            ></textarea>
+          </div>
+          <div className="form-group">
+            <label htmlFor="articlePrice">Price:</label>
+            <input
+              id="articlePrice"
+              type="number"
+              step="0.01"
+              value={newArticleData.price}
+              onChange={(e) => setNewArticleData({ ...newArticleData, price: parseFloat(e.target.value) })}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="articleImage">Image URL:</label>
+            <input
+              id="articleImage"
+              type="text"
+              value={newArticleData.image}
+              onChange={(e) => setNewArticleData({ ...newArticleData, image: e.target.value })}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="articleType">Type:</label>
+            <input
+              id="articleType"
+              type="text"
+              value={newArticleData.type}
+              onChange={(e) => setNewArticleData({ ...newArticleData, type: e.target.value })}
+              required
+            />
+          </div>
+          <button type="submit" className="modal-submit-button">Add Article</button>
+        </form>
+      </Modal>
+
+      {/* Add New Menu Modal */}
+      <Modal isOpen={showAddMenuModal} onClose={closeAddMenuModal} title="Add New Menu">
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          createMenu(newMenuData); // Call the creation function
+        }}>
+          <div className="form-group">
+            <label htmlFor="menuName">Name:</label>
+            <input
+              id="menuName"
+              type="text"
+              value={newMenuData.name}
+              onChange={(e) => setNewMenuData({ ...newMenuData, name: e.target.value })}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="menuDescription">Description:</label>
+            <textarea
+              id="menuDescription"
+              value={newMenuData.description}
+              onChange={(e) => setNewMenuData({ ...newMenuData, description: e.target.value })}
+              required
+            ></textarea>
+          </div>
+          <div className="form-group">
+            <label htmlFor="menuCategory">Category:</label>
+            <input
+              id="menuCategory"
+              type="text"
+              value={newMenuData.category}
+              onChange={(e) => setNewMenuData({ ...newMenuData, category: e.target.value })}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="menuPrice">Price:</label>
+            <input
+              id="menuPrice"
+              type="number"
+              step="0.01"
+              value={newMenuData.price}
+              onChange={(e) => setNewMenuData({ ...newMenuData, price: parseFloat(e.target.value) })}
+              required
+            />
+          </div>
+          {/* Note: Adding articles to a menu would require a more complex selection UI (e.g., multi-select dropdown)
+              For now, the 'articles' field is omitted from the input form for simplicity. */}
+          <button type="submit" className="modal-submit-button">Add Menu</button>
+        </form>
+      </Modal>
     </div>
   );
 };

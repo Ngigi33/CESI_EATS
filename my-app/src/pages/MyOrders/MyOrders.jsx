@@ -1,3 +1,5 @@
+// MyOrders.jsx
+
 import React, { useState, useEffect } from 'react';
 import './MyOrders.css';
 import FilterSearchSection from './FilterSearchSection';
@@ -21,12 +23,10 @@ const MyOrders = () => {
   const fetchRestaurantDetails = async (restaurantId) => {
     try {
       const restaurant = await restaurantService.getRestaurantById(restaurantId);
-      // Assuming getRestaurantById returns an object with a 'name' property directly
       return restaurant;
     } catch (error) {
-      console.error(`Erreur lors de la récupération du restaurant ${restaurantId}:`, error);
-      // Return a fallback object to prevent errors in subsequent processing
-      return { name: 'Restaurant Inconnu', image: '' }; // Added image fallback
+      console.error(`Error fetching restaurant ${restaurantId}:`, error);
+      return { name: 'Unknown Restaurant', image: '' };
     }
   };
 
@@ -34,57 +34,60 @@ const MyOrders = () => {
   const processOrders = async (ordersData) => {
     const processedOrders = await Promise.all(
       ordersData.map(async (order) => {
-        let restaurantName = 'Chargement...'; // Default
+        let restaurantName = 'Loading...';
         let restaurantImage = '';
 
-        // Fetch restaurant details
         if (order.restaurantId) {
           try {
             const restaurant = await fetchRestaurantDetails(order.restaurantId);
-            restaurantName = restaurant.name || 'Nom Inconnu';
-            restaurantImage = restaurant.image || ''; // Fallback if no image
+            restaurantName = restaurant.name || 'Unknown Name';
+            restaurantImage = restaurant.image || '';
           } catch (error) {
             console.error(
               `Could not fetch restaurant for order ${order._id}:`,
               error
             );
-            restaurantName = 'Restaurant non trouvé'; // Fallback if fetch fails
-            restaurantImage = ''; // Ensure image is also reset on error
+            restaurantName = 'Restaurant not found';
+            restaurantImage = '';
           }
         } else {
-          restaurantName = 'Pas de restaurant';
+          restaurantName = 'No restaurant';
           restaurantImage = '';
         }
 
-        // Format date and time
-        const formattedDateTime = formatDate(order.created); // Calls formatDate, returns { date: string, time: string }
-        
-        // Extract the date and time strings from the object
+        const formattedDateTime = formatDate(order.created);
         const displayDate = formattedDateTime.date;
         const displayTime = formattedDateTime.time;
 
-        // Map order status
         const { status, statusClass } = mapOrderStatus(
           order.status,
           order.accepted
         );
 
-        // Calculate total price if needed, or use existing price
         const total = order.price ? `${order.price.toFixed(2)} €` : 'N/A';
+
+        // --- IMPORTANT CHANGE HERE ---
+        // Ensure you're taking items from the 'article' array, not 'menus'
+        const orderItems = order.article || []; // Use 'order.article'
+        // If order.article might contain full article objects (like your JSON example),
+        // then orderItems is ready to be used by OrderItem.jsx.
+        // If it still only contains IDs, you'd need further population logic here
+        // or on the backend as discussed in the previous response.
+        // But given your JSON, it looks like it's already populated!
+        // --- END OF IMPORTANT CHANGE ---
 
         return {
           id: order._id,
           restaurantId: order.restaurantId,
           restaurant: restaurantName,
-          restaurantImage: restaurantImage, // Pass restaurant image if needed in OrderCard
-          // Pass the formatted date and time strings directly
-          date: displayDate, // Now this is a string like "22/06/2025"
-          time: displayTime, // Now this is a string like "14:02"
+          restaurantImage: restaurantImage,
+          date: displayDate,
+          time: displayTime,
           total: total,
           status: status,
           statusClass: statusClass,
-          items: order.menus || [], // Assuming 'menus' array holds item details
-          deliveryTime: '30-45 min', // Example static value, consider making this dynamic if possible
+          items: orderItems, // Pass the correctly processed items
+          deliveryTime: '30-45 min',
           deliveryAddress: order.address,
           accepted: order.accepted,
         };
@@ -101,8 +104,8 @@ const MyOrders = () => {
       const processed = await processOrders(data);
       setOrders(processed);
     } catch (err) {
-      console.error('Erreur lors de la récupération des commandes:', err);
-      setError('Impossible de charger les commandes. Veuillez réessayer.');
+      console.error('Error fetching orders:', err);
+      setError('Unable to load orders. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -117,14 +120,14 @@ const MyOrders = () => {
   };
 
   const handleCancelOrder = async (orderId) => {
-    if (window.confirm('Êtes-vous sûr de vouloir annuler cette commande ?')) {
+    if (window.confirm('Are you sure you want to cancel this order?')) {
       try {
         await orderService.updateOrder(orderId, { status: 'cancelled', accepted: false });
-        alert('Commande annulée avec succès.');
+        alert('Order Cancelled.');
         fetchOrders(); // Refresh the list
       } catch (err) {
-        console.error('Erreur lors de l\'annulation de la commande:', err);
-        alert('Échec de l\'annulation de la commande.');
+        console.error('Error canceling order:', err);
+        alert('Failed to cancel the order.');
       }
     }
   };
@@ -140,7 +143,7 @@ const MyOrders = () => {
     const matchesStatus = filterStatus === 'all' || order.statusClass === filterStatus;
     const matchesSearch = searchTerm === '' ||
       order.restaurant.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.id.toLowerCase().includes(searchTerm.toLowerCase()); // Search by last 4 chars of ID if displayed
+      order.id.toLowerCase().includes(searchTerm.toLowerCase());
 
     return matchesStatus && matchesSearch;
   });
@@ -149,7 +152,7 @@ const MyOrders = () => {
     return (
       <div className="my-orders-container">
         <div className="loading-state">
-          <p>Chargement des commandes...</p>
+          <p>Loading orders...</p>
         </div>
       </div>
     );
@@ -162,7 +165,7 @@ const MyOrders = () => {
           <div className="error-message-box">
             <p>{error}</p>
             <button onClick={handleRefresh} className="retry-button">
-              Réessayer
+              Retry
             </button>
           </div>
         </div>
@@ -173,9 +176,9 @@ const MyOrders = () => {
   return (
     <div className="my-orders-container">
       <div className="page-header">
-        <h1 className="page-title">Mes Commandes</h1>
+        <h1 className="page-title">My Orders</h1>
         <button onClick={handleRefresh} className="refresh-button">
-          Actualiser
+          Refresh
         </button>
       </div>
 
@@ -189,16 +192,15 @@ const MyOrders = () => {
       <div className="orders-list">
         {filteredOrders.length === 0 ? (
           <div className="no-orders">
-            <p>Aucune commande trouvée.</p>
-            {/* Specific message if no orders loaded at all (not just filtered) */}
+            <p>No orders found.</p>
             {orders.length === 0 && (
-              <p>Vous n'avez pas encore passé de commande.</p>
+              <p>You haven't placed any orders yet.</p>
             )}
           </div>
         ) : (
           filteredOrders.map(order => (
             <OrderCard
-              key={order.id} // Use the processed order ID
+              key={order.id}
               order={order}
               isActive={activeOrder === order.id}
               onToggleActive={handleToggleActiveOrder}

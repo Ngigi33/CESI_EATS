@@ -203,20 +203,20 @@ export const mapOrderStatus = (dbStatus, accepted) => {
     case 'pending':
       return { status: 'En attente', statusClass: 'pending' };
     case 'accepted':
-      return { status: 'Acceptée', statusClass: 'confirmed' };
+      return { status: 'Accepted', statusClass: 'confirmed' };
     case 'preparing':
-      return { status: 'En préparation', statusClass: 'preparing' };
+      return { status: 'preparing', statusClass: 'preparing' };
     case 'ready':
       return { status: 'Prête', statusClass: 'ready' };
     case 'delivered':
-      return { status: 'Livrée', statusClass: 'delivered' };
+      return { status: 'Delivered', statusClass: 'delivered' };
     case 'cancelled':
-      return { status: 'Annulée', statusClass: 'cancelled' };
+      return { status: 'Cancelled', statusClass: 'cancelled' };
     default:
       if (accepted === false) {
-        return { status: 'Refusée', statusClass: 'cancelled' };
+        return { status: 'cancelled', statusClass: 'cancelled' };
       }
-      return { status: 'En attente', statusClass: 'pending' };
+      return { status: 'pending', statusClass: 'pending' };
   }
 };
 

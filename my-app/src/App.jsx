@@ -11,7 +11,7 @@ import DeliveryDashboard from './pages/DeliveryDashboard/DeliveryDashboard'
 import Authentication from './pages/Authentication/Authentication'
 import ThirdPartyDeveloper from './pages/ThirdPartyDeveloper/ThirdPartyDeveloper'
 import MyOrders from './pages/MyOrders/MyOrders'
-import RestaurantOwnerDashboard from './pages/OwnerDashboardPage/OwnerDashboardPage'
+import RestaurantOwnerDashboard from './pages/OwnerDashboardPage/RestaurantOwnerDashboard'
 
 const App = () => {
 
@@ -32,7 +32,7 @@ const App = () => {
           <Route path="/auth" element={<Authentication />} />
           <Route path='/developer' element={<ThirdPartyDeveloper/>}/>
           <Route path='/myorders' element={<MyOrders/>}/>
-          <Route path="/owner-dashboard" element={<RestaurantOwnerDashboard />} />
+          <Route path="/owner" element={<RestaurantOwnerDashboard />} />
         </Routes>
       </div>
       <Footer />

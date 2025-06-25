@@ -19,6 +19,7 @@ import { List } from 'lucide-react'
 import Add from './pages/Add/Add'
 import {ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import Account from './pages/Account/Account'
 
 const App = () => {
   const [showLogin, setShowLogin] = useState(false)
@@ -40,6 +41,7 @@ const App = () => {
           <Route path='/sales' element={<SalesDepartment />} />
           <Route path='/dev' element={<ThirdPartyDeveloper />} />
           <Route path='/support' element={<Support />} />
+          <Route path='/account' element={<Account />} />
           <Route path='/resto' element={<RestaurantOwnerDashboard setShowLogin={setShowLogin} />} />
         </Routes>
       </div>

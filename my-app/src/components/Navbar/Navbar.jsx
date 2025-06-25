@@ -14,6 +14,14 @@ const Navbar = ({ setShowLogin }) => {
     navigate('/');
   };
 
+  const account = () => {
+    navigate('/account');
+  };
+
+  const orders = () => {
+    navigate('/order');
+  };
+
   return (
     <div className="navbar">
       <Link to="/"><img src={assets.logo} alt="Logo" className="logo" /></Link>
@@ -39,7 +47,9 @@ const Navbar = ({ setShowLogin }) => {
           <div className="navbar-profile">
             <img src={assets.profile_icon} alt="Profile" />
             <ul className="nav-profile-dropdown">
-              <li><img src={assets.bag_icon} alt="Orders" /><p>Orders</p></li>
+              <li onClick={account}><img src={assets.profile_icon} alt="Account" /><p>Account</p></li>
+              <hr />
+              <li onClick={orders}><img src={assets.bag_icon} alt="Orders" /><p>Orders</p></li>
               <hr />
               <li onClick={logout}><img src={assets.logout_icon} alt="Logout" /><p>Logout</p></li>
             </ul>

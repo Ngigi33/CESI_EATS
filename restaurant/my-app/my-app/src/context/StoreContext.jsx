@@ -41,7 +41,7 @@ const StoreContextProvider = (props) => {
 
 
 
-    useEffect(() => {
+    /*useEffect(() => {
         async function loadData() {
             if (localStorage.getItem("token")) {
                 setToken(localStorage.getItem("token"));
@@ -49,7 +49,13 @@ const StoreContextProvider = (props) => {
             }
         }
         loadData();
-    }, [])
+    }, [])*/
+
+    useEffect(()=>{
+        if(localStorage.getItem("token")){
+            setToken(localStorage.getItem("token"))
+        }
+    }, [])   
 
 
 
@@ -97,7 +103,6 @@ const StoreContextProvider = (props) => {
     };
 
     //get token from localStorage
-
 
     const getUniqueCategories = () => {
         const categories = [...new Set(food_list.map(food => food.category))];
@@ -161,6 +166,7 @@ const StoreContextProvider = (props) => {
         error,
         refreshFoodList: fetchFoodList,
         //for user management
+        auth_url,
         url_order,
         token,
         setToken

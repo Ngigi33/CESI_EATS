@@ -19,7 +19,6 @@ body {
     max-width: 1400px; /* Max width for content */
     margin: 0 auto; /* Center content */
     width: 100%;
-    box-sizing: border-box; /* Include padding in element's total width and height */
 }
 
 /* Stats Grid */
@@ -128,8 +127,6 @@ body {
     list-style: none;
     padding: 0;
     margin: 0;
-    display: flex; /* Enable flex for menu items */
-    flex-direction: column; /* Stack vertically by default */
 }
 
 .navigation-menu li {
@@ -168,7 +165,6 @@ body {
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     padding: 25px;
-    box-sizing: border-box; /* Ensure padding is included */
 }
 
 .tab-section-header {
@@ -178,8 +174,6 @@ body {
     margin-bottom: 25px;
     padding-bottom: 15px;
     border-bottom: 1px solid #eee;
-    flex-wrap: wrap; /* Allow wrapping on small screens */
-    gap: 10px; /* Space between items when wrapped */
 }
 
 .tab-section-header h2 {
@@ -265,7 +259,6 @@ body {
     gap: 10px;
     width: 100%;
     justify-content: center;
-    flex-wrap: wrap; /* Allow buttons to wrap */
 }
 
 .item-actions button, .order-actions button {
@@ -349,7 +342,6 @@ body {
   font-size: 1em;
   color: #333;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  box-sizing: border-box; /* Ensure padding is included */
 }
 
 .form-group input[type="text"]:focus,
@@ -383,15 +375,6 @@ body {
   transform: translateY(-1px);
 }
 
-/* New responsive class for table wrappers */
-.responsive-table-wrapper {
-  overflow-x: auto; /* Allows horizontal scrolling for tables */
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  /* Added padding-bottom to prevent scrollbar from hiding content */
-  padding-bottom: 10px;
-}
-
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .dashboard-content {
@@ -404,67 +387,19 @@ body {
     }
 
     .stats-grid {
-        grid-template-columns: 1fr; /* Stack cards on small screens */
+        grid-template-columns: 1fr;
     }
 
     .navigation-menu ul {
-        flex-direction: row; /* Make menu items horizontal on small screens */
-        flex-wrap: wrap; /* Allow items to wrap to next line */
+        display: flex;
+        flex-wrap: wrap;
         justify-content: center;
-        gap: 10px; /* Adjust gap for horizontal layout */
+        gap: 10px;
     }
 
     .navigation-menu li {
-        flex-grow: 1; /* Allow items to grow and fill space */
+        flex-grow: 1;
         text-align: center;
         justify-content: center;
-        padding: 8px 10px; /* Smaller padding for tighter fit */
-        font-size: 0.95em; /* Slightly smaller font */
-    }
-
-    .navigation-menu li svg {
-        margin-right: 5px; /* Reduce margin for icon */
-    }
-
-    .main-content {
-        padding: 15px; /* Reduced padding for smaller screens */
-    }
-
-    .tab-section-header {
-        flex-direction: column; /* Stack header elements */
-        align-items: flex-start; /* Align to start */
-    }
-
-    .tab-section-header h2 {
-        font-size: 1.5em; /* Smaller font size for titles */
-        margin-bottom: 10px;
-    }
-
-    .add-button {
-        width: 100%; /* Full width button */
-        justify-content: center;
-        padding: 12px 15px;
-    }
-
-    .item-actions button, .order-actions button {
-        flex-grow: 1; /* Make action buttons fill space */
-    }
-}
-
-@media (max-width: 480px) {
-    .page-content-wrapper {
-        padding: 10px; /* Even less padding on very small screens */
-    }
-    .main-content {
-        padding: 10px;
-    }
-    .stat-card {
-        padding: 15px;
-    }
-    .stat-value {
-        font-size: 1.8em; /* Smaller font for stats */
-    }
-    .dashboard-card h3 {
-        font-size: 1.1em;
     }
 }

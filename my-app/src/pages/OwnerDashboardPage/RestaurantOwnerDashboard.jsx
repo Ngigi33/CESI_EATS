@@ -63,7 +63,7 @@ const RestaurantOwnerDashboard = () => {
 
         const newOrders = restaurantOrders.filter(order => order.status === 'pending');
         const inProgressOrders = restaurantOrders.filter(order => order.status === 'preparing' || order.status === 'out_for_delivery');
-        const completedOrders = restaurantOrders.filter(order => order.status === 'completed');
+        const completedOrders = restaurantOrders.filter(order => order.status === 'completed' || order.status === 'delivered');
 
         setOrders({
           new_orders: newOrders,
@@ -96,6 +96,23 @@ const RestaurantOwnerDashboard = () => {
     } catch (err) {
       console.error("Error validating order:", err);
       alert("Error validating order: " + err.message);
+    }
+  };
+
+  // --- NEW FUNCTION: Handle Complete Order ---
+  const handleCompleteOrder = async (orderId) => {
+    try {
+      const response = await fetch(`http://localhost:4003/orders/${orderId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'completed' }) // Change status to completed
+      });
+      if (!response.ok) throw new Error('Failed to complete order');
+      alert(`Order ${orderId} marked as completed.`);
+      window.location.reload();
+    } catch (err) {
+      console.error("Error completing order:", err);
+      alert("Error completing order: " + err.message);
     }
   };
 
@@ -302,6 +319,19 @@ const RestaurantOwnerDashboard = () => {
               </div>
             </div>
           </div>
+
+          {/* NEW STAT CARD FOR COMPLETED ORDERS */}
+          <div className="stat-card">
+            <div className="stat-card-content">
+              <div className="stat-icon-wrapper stat-icon-green">
+                <CheckCircle className="w-6 h-6 text-green-600" />
+              </div>
+              <div className="stat-details">
+                <p className="stat-label">Completed Orders</p>
+                <p className="stat-value">{orders.completed_orders.length}</p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Sidebar and Main Content */}
@@ -348,6 +378,7 @@ const RestaurantOwnerDashboard = () => {
             articles={articles}
             menus={menus}
             handleValidateOrder={handleValidateOrder}
+            handleCompleteOrder={handleCompleteOrder} // PASS THE NEW FUNCTION
             onAddArticleClick={openAddArticleModal}
             onEditArticleClick={openEditArticleModal} // Pass the new function
             handleDeleteArticle={handleDeleteArticle}

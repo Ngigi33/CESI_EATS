@@ -206,10 +206,10 @@ export const mapOrderStatus = (dbStatus, accepted) => {
       return { status: 'Accepted', statusClass: 'confirmed' };
     case 'preparing':
       return { status: 'Preparing', statusClass: 'preparing' };
-    case 'ready':
-      return { status: 'Prête', statusClass: 'ready' };
+    case 'completed':
+      return { status: 'Completed', statusClass: 'delivered' };
     case 'delivered':
-      return { status: 'Delivered', statusClass: 'delivered' };
+      return { status: 'completed', statusClass: 'delivered' };
     case 'cancelled':
       return { status: 'Cancelled', statusClass: 'cancelled' };
     default:

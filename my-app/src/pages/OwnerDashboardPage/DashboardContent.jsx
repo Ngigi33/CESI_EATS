@@ -1,3 +1,4 @@
+// DashboardContent.jsx
 import React from 'react';
 import { PlusCircle, Edit } from 'lucide-react'; // Import PlusCircle and Edit icons
 
@@ -7,11 +8,12 @@ const DashboardContent = ({
   articles,
   menus,
   handleValidateOrder,
+  handleCompleteOrder, // NEW PROP
   onAddArticleClick,
   onAddMenuClick,
-  onEditArticleClick, // New prop for editing article
+  onEditArticleClick,
   handleDeleteArticle,
-  onEditMenuClick,    // New prop for editing menu
+  onEditMenuClick,
   handleDeleteMenu,
 }) => {
   return (
@@ -31,8 +33,27 @@ const DashboardContent = ({
                   <p>Customer Address: {order.address}</p>
                   <p>Price: {order.price}€</p>
                   <p>Status: <span className="status-pending">{order.status}</span></p>
+                  <div className="order-items">
+                    <h4>Items:</h4>
+                    {order.items && order.items.length > 0 ? (
+                      <ul>
+                        {order.items.map((item, idx) => (
+                          <li key={idx}>
+                            {item.quantity ? `${item.quantity}x ` : ''}{item.name} - {item.price}€
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p>No items listed.</p>
+                    )}
+                  </div>
                   <div className="order-actions">
-                    <button className="status-button" onClick={() => handleValidateOrder(order._id)}>Validate Order</button>
+                    <button
+                      className="validate-button"
+                      onClick={() => handleValidateOrder(order._id)}
+                    >
+                      Validate Order
+                    </button>
                   </div>
                 </div>
               ))
@@ -44,10 +65,10 @@ const DashboardContent = ({
       {/* In Progress Orders Tab */}
       {activeTab === 'in_progress_orders' && (
         <div className="tab-section">
-          <h2 className="tab-section-title">Orders In Progress ({orders.in_progress_orders.length})</h2>
+          <h2 className="tab-section-title">In Progress Orders ({orders.in_progress_orders.length})</h2>
           <div className="orders-list">
             {orders.in_progress_orders.length === 0 ? (
-              <p className="no-orders-message">No orders currently in progress.</p>
+              <p className="no-orders-message">No orders in progress.</p>
             ) : (
               orders.in_progress_orders.map(order => (
                 <div key={order._id} className="order-card">
@@ -56,7 +77,29 @@ const DashboardContent = ({
                   <p>Customer Address: {order.address}</p>
                   <p>Price: {order.price}€</p>
                   <p>Status: <span className="status-in-progress">{order.status}</span></p>
-                  {/* Add more actions for in-progress orders if needed */}
+                  <div className="order-items">
+                    <h4>Items:</h4>
+                    {order.items && order.items.length > 0 ? (
+                      <ul>
+                        {order.items.map((item, idx) => (
+                          <li key={idx}>
+                            {item.quantity ? `${item.quantity}x ` : ''}{item.name} - {item.price}€
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p>No items listed.</p>
+                    )}
+                  </div>
+                  <div className="order-actions">
+                    {/* NEW BUTTON FOR COMPLETING ORDER */}
+                    <button
+                      className="complete-button" // You might want to define styles for this in CSS
+                      onClick={() => handleCompleteOrder(order._id)}
+                    >
+                      Completed
+                    </button>
+                  </div>
                 </div>
               ))
             )}
@@ -70,7 +113,7 @@ const DashboardContent = ({
           <h2 className="tab-section-title">Completed Orders ({orders.completed_orders.length})</h2>
           <div className="orders-list">
             {orders.completed_orders.length === 0 ? (
-              <p className="no-orders-message">No completed orders yet.</p>
+              <p className="no-orders-message">No completed orders today.</p>
             ) : (
               orders.completed_orders.map(order => (
                 <div key={order._id} className="order-card">
@@ -79,7 +122,20 @@ const DashboardContent = ({
                   <p>Customer Address: {order.address}</p>
                   <p>Price: {order.price}€</p>
                   <p>Status: <span className="status-completed">{order.status}</span></p>
-                  {/* No actions needed for completed orders usually */}
+                  <div className="order-items">
+                    <h4>Items:</h4>
+                    {order.items && order.items.length > 0 ? (
+                      <ul>
+                        {order.items.map((item, idx) => (
+                          <li key={idx}>
+                            {item.quantity ? `${item.quantity}x ` : ''}{item.name} - {item.price}€
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p>No items listed.</p>
+                    )}
+                  </div>
                 </div>
               ))
             )}
@@ -105,10 +161,11 @@ const DashboardContent = ({
                   <img src={article.image} alt={article.name} className="item-image" />
                   <h3>{article.name}</h3>
                   <p>{article.description}</p>
+                  <p>Type: {article.type}</p>
                   <p className="item-price">{article.price}€</p>
                   <div className="item-actions">
-                    <button className="edit-button" onClick={() => onEditArticleClick(article)}> {/* Edit button */}
-                        <Edit size={16} /> Edit
+                    <button className="edit-button" onClick={() => onEditArticleClick(article)}>
+                      <Edit size={16} /> Edit
                     </button>
                     <button onClick={() => handleDeleteArticle(article._id)}>Delete</button>
                   </div>
@@ -141,8 +198,8 @@ const DashboardContent = ({
                   <p>Category: {menu.category}</p>
                   <p className="item-price">{menu.price}€</p>
                   <div className="item-actions">
-                    <button className="edit-button" onClick={() => onEditMenuClick(menu)}> {/* Edit button */}
-                        <Edit size={16} /> Edit
+                    <button className="edit-button" onClick={() => onEditMenuClick(menu)}>
+                      <Edit size={16} /> Edit
                     </button>
                     <button onClick={() => handleDeleteMenu(menu._id)}>Delete</button>
                   </div>

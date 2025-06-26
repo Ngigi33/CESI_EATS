@@ -1,9 +1,12 @@
+import dotenv from "dotenv"
+dotenv.config()
+
 import express from "express"
 import cors from "cors"
 import db from "./models/index.js"
 import authRoutes from "./routes/auth.routes.js"
 import userRoutes from "./routes/user.routes.js"
-import dotenv from "dotenv"
+
 
 dotenv.config()
 
@@ -34,3 +37,7 @@ db.sequelize.sync({alter:true}).then(() => {
         console.log(`Server is running on ${PORT}.`)
     })
 })
+
+console.log('DB_USER:', process.env.DB_USER);
+console.log('DB_PASSWORD:', process.env.DB_PASSWORD);
+

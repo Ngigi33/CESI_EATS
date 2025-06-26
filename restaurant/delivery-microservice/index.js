@@ -1,8 +1,9 @@
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import deliveryRoutes from './routes/deliveryRoutes.js';
 
-const deliveryRoutes = require('./routes/deliveryRoutes');
+dotenv.config();
 
 const app = express();
 app.use(cors());

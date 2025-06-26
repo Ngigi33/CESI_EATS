@@ -23,7 +23,7 @@ app.use(cors({
 }));
 
 // Servir les images depuis backend/public/images/food
-const imagesPath = path.join(__dirname, '../../public/images/food');
+const imagesPath = path.join(__dirname, 'assets');
 console.log('Chemin des images:', imagesPath);
 
 // Headers pour les images

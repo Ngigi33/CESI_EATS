@@ -2,15 +2,20 @@
 import { createContext, useEffect, useState } from "react";
 import { articleService } from "../services/apiService";
 import axios from "axios";
-
+axios.defaults.baseURL = "/"
 
 export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
 
-    const url_order = 'http://localhost:5009'; 
+    const url_order = 'http://localhost:5009/api'; 
 
-    const auth_url = "http://localhost:5000/api/auth" //user management url from docker
+    //const auth_url = "http://localhost:5000/api/auth" //user management url from docker
+
+    // const url_order = `5009/api/orders`;
+    const auth_url = "/api/auth";
+
+
     const [token, setToken] = useState("");
 
     // 1. Initialize cartItems by reading from Local Storage
@@ -51,11 +56,11 @@ const StoreContextProvider = (props) => {
         loadData();
     }, [])*/
 
-    useEffect(()=>{
-        if(localStorage.getItem("token")){
+    useEffect(() => {
+        if (localStorage.getItem("token")) {
             setToken(localStorage.getItem("token"))
         }
-    }, [])   
+    }, [])
 
 
 
@@ -66,7 +71,7 @@ const StoreContextProvider = (props) => {
             setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] + 1 }));
         }
         if (token) {
-            await axios.post(url_order + "/api/cart/add", { itemId }, { headers: { Authorization: `Bearer ${token}` } });
+            await axios.post('/api/cart/add', { itemId }, { headers: { Authorization: `Bearer ${token}` } });
         }
     };
 
@@ -80,12 +85,12 @@ const StoreContextProvider = (props) => {
             return newCart;
         });
         if (token) {
-            await axios.post(url_order + "/api/cart/remove", { itemId }, { headers: { Authorization: `Bearer ${token}` } });
+            await axios.post(url_order + "/cart/remove", { itemId }, { headers: { Authorization: `Bearer ${token}` } });
         }
     };
 
     const loadCartData = async (token) => {
-        const response = await axios.post(url_order + "/api/cart/get", {}, { headers: { Authorization: `Bearer ${token}` } });
+        const response = await axios.post(url_order + "/cart/get", {}, { headers: { Authorization: `Bearer ${token}` } });
         setCartItems(response.data.cartData);
     }
 
@@ -102,7 +107,7 @@ const StoreContextProvider = (props) => {
         return totalAmount;
     };
 
-    const clearCart = async() =>{
+    const clearCart = async () => {
         setCartItems({})
         localStorage.removeItem('cartItems')
     }
@@ -124,7 +129,7 @@ const StoreContextProvider = (props) => {
                     // Otherwise, construct the full URL.
                     const imageUrl = item.image.startsWith('http')
                         ? item.image
-                        : `http://localhost:${process.env.PORT || 4005}/images/food/${item.image}`;
+                        : `/api/images/food/${item.image}`;
 
                     return {
                         _id: item._id,

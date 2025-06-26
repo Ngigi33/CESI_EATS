@@ -309,7 +309,7 @@ const SalesDepartment = () => {
         </div>
 
         <div className="dashboard-card revenue">
-          <h3>Revenue</h3>
+          <h3>Total Sales</h3>
           <div className="stats">
             <div className="stat-item">
               <span className="stat-number">€{dashboardStats.totalRevenue.toFixed(2)}</span>

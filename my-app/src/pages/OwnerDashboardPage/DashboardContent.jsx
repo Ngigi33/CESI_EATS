@@ -1,5 +1,5 @@
 import React from 'react';
-import { PlusCircle } from 'lucide-react'; // Import PlusCircle icon (ensure lucide-react is installed)
+import { PlusCircle, Edit } from 'lucide-react'; // Import PlusCircle and Edit icons
 
 const DashboardContent = ({
   activeTab,
@@ -7,11 +7,11 @@ const DashboardContent = ({
   articles,
   menus,
   handleValidateOrder,
-  onAddArticleClick, // New prop: function to open add article modal
-  onAddMenuClick,   // New prop: function to open add menu modal
-  handleUpdateArticle,
+  onAddArticleClick,
+  onAddMenuClick,
+  onEditArticleClick, // New prop for editing article
   handleDeleteArticle,
-  handleUpdateMenu,
+  onEditMenuClick,    // New prop for editing menu
   handleDeleteMenu,
 }) => {
   return (
@@ -92,7 +92,7 @@ const DashboardContent = ({
         <div className="tab-section">
           <div className="tab-section-header">
             <h2>Article Management</h2>
-            <button className="add-button" onClick={onAddArticleClick}> {/* Trigger modal */}
+            <button className="add-button" onClick={onAddArticleClick}>
               <PlusCircle size={20} /> Add New Article
             </button>
           </div>
@@ -107,7 +107,9 @@ const DashboardContent = ({
                   <p>{article.description}</p>
                   <p className="item-price">{article.price}€</p>
                   <div className="item-actions">
-                    {/* You can add an "Edit" button here which opens another modal for editing */}
+                    <button className="edit-button" onClick={() => onEditArticleClick(article)}>
+                        <Edit size={16} /> Edit
+                    </button>
                     <button onClick={() => handleDeleteArticle(article._id)}>Delete</button>
                   </div>
                 </div>
@@ -122,7 +124,7 @@ const DashboardContent = ({
         <div className="tab-section">
           <div className="tab-section-header">
             <h2>Menu Management</h2>
-            <button className="add-button" onClick={onAddMenuClick}> {/* Trigger modal */}
+            <button className="add-button" onClick={onAddMenuClick}>
               <PlusCircle size={20} /> Add New Menu
             </button>
           </div>
@@ -139,7 +141,9 @@ const DashboardContent = ({
                   <p>Category: {menu.category}</p>
                   <p className="item-price">{menu.price}€</p>
                   <div className="item-actions">
-                    {/* You can add an "Edit" button here which opens another modal for editing */}
+                    <button className="edit-button" onClick={() => onEditMenuClick(menu)}>
+                        <Edit size={16} /> Edit
+                    </button>
                     <button onClick={() => handleDeleteMenu(menu._id)}>Delete</button>
                   </div>
                 </div>

@@ -201,11 +201,11 @@ export const menuService = {
 export const mapOrderStatus = (dbStatus, accepted) => {
   switch (dbStatus) {
     case 'pending':
-      return { status: 'En attente', statusClass: 'pending' };
+      return { status: 'Pending', statusClass: 'pending' };
     case 'accepted':
       return { status: 'Accepted', statusClass: 'confirmed' };
     case 'preparing':
-      return { status: 'preparing', statusClass: 'preparing' };
+      return { status: 'Preparing', statusClass: 'preparing' };
     case 'ready':
       return { status: 'Prête', statusClass: 'ready' };
     case 'delivered':

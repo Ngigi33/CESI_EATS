@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ChefHat, Utensils, BookText, ShoppingCart, TrendingUp, Clock, CheckCircle, PlusCircle } from 'lucide-react'; // Added PlusCircle icon
+import { ChefHat, Utensils, BookText, ShoppingCart, TrendingUp, Clock, CheckCircle, PlusCircle, Edit } from 'lucide-react'; // Added Edit icon
 import DashboardContent from './DashboardContent';
-import Modal from '../../components/Modal/Modal'; // Import the new Modal component
+import Modal from '../../components/Modal/Modal';
 import './RestaurantOwnerDashboard.css';
 
 // --- Placeholder for the Restaurant ID ---
@@ -19,13 +19,18 @@ const RestaurantOwnerDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // State for modal visibility
+  // States for modal visibility
   const [showAddArticleModal, setShowAddArticleModal] = useState(false);
+  const [showEditArticleModal, setShowEditArticleModal] = useState(false); // New state for edit article modal
   const [showAddMenuModal, setShowAddMenuModal] = useState(false);
+  const [showEditMenuModal, setShowEditMenuModal] = useState(false);   // New state for edit menu modal
 
-  // States for new article/menu form data
+  // States for new/edited article/menu form data
   const [newArticleData, setNewArticleData] = useState({ name: '', description: '', price: '', image: '', type: '' });
+  const [editingArticle, setEditingArticle] = useState(null); // Stores article being edited
+
   const [newMenuData, setNewMenuData] = useState({ name: '', description: '', category: '', price: '' }); // Simplified articles for now
+  const [editingMenu, setEditingMenu] = useState(null);       // Stores menu being edited
 
   // --- Fetch Data from Microservices ---
   useEffect(() => {
@@ -95,7 +100,7 @@ const RestaurantOwnerDashboard = () => {
   };
 
   // --- Article (Item) Management Functions ---
-  const createArticle = async (articleData) => { // Renamed to avoid confusion with handler
+  const createArticle = async (articleData) => {
     try {
       const response = await fetch('http://localhost:4005/articles', {
         method: 'POST',
@@ -118,11 +123,16 @@ const RestaurantOwnerDashboard = () => {
   const handleUpdateArticle = async (articleId, updatedData) => {
     try {
       const response = await fetch(`http://localhost:4005/articles/${articleId}`, {
-        method: 'PATCH',
+        method: 'PATCH', // Assuming PATCH is used for partial updates
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedData)
       });
-      if (!response.ok) throw new Error('Failed to update article');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update article');
+      }
+      setShowEditArticleModal(false); // Close modal on success
+      setEditingArticle(null); // Clear editing state
       alert('Article updated successfully!');
       window.location.reload();
     } catch (err) {
@@ -147,7 +157,7 @@ const RestaurantOwnerDashboard = () => {
   };
 
   // --- Menu Management Functions ---
-  const createMenu = async (menuData) => { // Renamed to avoid confusion with handler
+  const createMenu = async (menuData) => {
     try {
       const response = await fetch('http://localhost:4002/api/menu', {
         method: 'POST',
@@ -174,7 +184,12 @@ const RestaurantOwnerDashboard = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedData)
       });
-      if (!response.ok) throw new Error('Failed to update menu');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update menu');
+      }
+      setShowEditMenuModal(false); // Close modal on success
+      setEditingMenu(null);       // Clear editing state
       alert('Menu updated successfully!');
       window.location.reload();
     } catch (err) {
@@ -201,8 +216,31 @@ const RestaurantOwnerDashboard = () => {
   // Functions to open/close modals
   const openAddArticleModal = () => setShowAddArticleModal(true);
   const closeAddArticleModal = () => setShowAddArticleModal(false);
+
+  const openEditArticleModal = (article) => {
+    setEditingArticle(article); // Set the article to be edited
+    setNewArticleData(article); // Populate the form with current article data
+    setShowEditArticleModal(true);
+  };
+  const closeEditArticleModal = () => {
+    setShowEditArticleModal(false);
+    setEditingArticle(null); // Clear editing state
+    setNewArticleData({ name: '', description: '', price: '', image: '', type: '' }); // Reset form
+  };
+
   const openAddMenuModal = () => setShowAddMenuModal(true);
   const closeAddMenuModal = () => setShowAddMenuModal(false);
+
+  const openEditMenuModal = (menu) => {
+    setEditingMenu(menu); // Set the menu to be edited
+    setNewMenuData(menu); // Populate the form with current menu data
+    setShowEditMenuModal(true);
+  };
+  const closeEditMenuModal = () => {
+    setShowEditMenuModal(false);
+    setEditingMenu(null); // Clear editing state
+    setNewMenuData({ name: '', description: '', category: '', price: '' }); // Reset form
+  };
 
   if (loading) {
     return <div className="loading-message">Loading restaurant dashboard data...</div>;
@@ -310,12 +348,11 @@ const RestaurantOwnerDashboard = () => {
             articles={articles}
             menus={menus}
             handleValidateOrder={handleValidateOrder}
-            // Pass functions to open modals
             onAddArticleClick={openAddArticleModal}
-            onAddMenuClick={openAddMenuModal}
-            handleUpdateArticle={handleUpdateArticle}
+            onEditArticleClick={openEditArticleModal} // Pass the new function
             handleDeleteArticle={handleDeleteArticle}
-            handleUpdateMenu={handleUpdateMenu}
+            onAddMenuClick={openAddMenuModal}
+            onEditMenuClick={openEditMenuModal}     // Pass the new function
             handleDeleteMenu={handleDeleteMenu}
           />
         </div>
@@ -325,12 +362,12 @@ const RestaurantOwnerDashboard = () => {
       <Modal isOpen={showAddArticleModal} onClose={closeAddArticleModal} title="Add New Article">
         <form onSubmit={(e) => {
           e.preventDefault();
-          createArticle(newArticleData); // Call the creation function
+          createArticle(newArticleData);
         }}>
           <div className="form-group">
-            <label htmlFor="articleName">Name:</label>
+            <label htmlFor="addArticleName">Name:</label>
             <input
-              id="articleName"
+              id="addArticleName"
               type="text"
               value={newArticleData.name}
               onChange={(e) => setNewArticleData({ ...newArticleData, name: e.target.value })}
@@ -338,18 +375,18 @@ const RestaurantOwnerDashboard = () => {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="articleDescription">Description:</label>
+            <label htmlFor="addArticleDescription">Description:</label>
             <textarea
-              id="articleDescription"
+              id="addArticleDescription"
               value={newArticleData.description}
               onChange={(e) => setNewArticleData({ ...newArticleData, description: e.target.value })}
               required
             ></textarea>
           </div>
           <div className="form-group">
-            <label htmlFor="articlePrice">Price:</label>
+            <label htmlFor="addArticlePrice">Price:</label>
             <input
-              id="articlePrice"
+              id="addArticlePrice"
               type="number"
               step="0.01"
               value={newArticleData.price}
@@ -358,9 +395,9 @@ const RestaurantOwnerDashboard = () => {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="articleImage">Image URL:</label>
+            <label htmlFor="addArticleImage">Image URL:</label>
             <input
-              id="articleImage"
+              id="addArticleImage"
               type="text"
               value={newArticleData.image}
               onChange={(e) => setNewArticleData({ ...newArticleData, image: e.target.value })}
@@ -368,9 +405,9 @@ const RestaurantOwnerDashboard = () => {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="articleType">Type:</label>
+            <label htmlFor="addArticleType">Type:</label>
             <input
-              id="articleType"
+              id="addArticleType"
               type="text"
               value={newArticleData.type}
               onChange={(e) => setNewArticleData({ ...newArticleData, type: e.target.value })}
@@ -381,16 +418,78 @@ const RestaurantOwnerDashboard = () => {
         </form>
       </Modal>
 
+      {/* Edit Article Modal */}
+      <Modal isOpen={showEditArticleModal} onClose={closeEditArticleModal} title="Edit Article">
+        {editingArticle && ( // Only render form if an article is being edited
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            handleUpdateArticle(editingArticle._id, newArticleData); // Pass ID and updated data
+          }}>
+            <div className="form-group">
+              <label htmlFor="editArticleName">Name:</label>
+              <input
+                id="editArticleName"
+                type="text"
+                value={newArticleData.name}
+                onChange={(e) => setNewArticleData({ ...newArticleData, name: e.target.value })}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="editArticleDescription">Description:</label>
+              <textarea
+                id="editArticleDescription"
+                value={newArticleData.description}
+                onChange={(e) => setNewArticleData({ ...newArticleData, description: e.target.value })}
+                required
+              ></textarea>
+            </div>
+            <div className="form-group">
+              <label htmlFor="editArticlePrice">Price:</label>
+              <input
+                id="editArticlePrice"
+                type="number"
+                step="0.01"
+                value={newArticleData.price}
+                onChange={(e) => setNewArticleData({ ...newArticleData, price: parseFloat(e.target.value) })}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="editArticleImage">Image URL:</label>
+              <input
+                id="editArticleImage"
+                type="text"
+                value={newArticleData.image}
+                onChange={(e) => setNewArticleData({ ...newArticleData, image: e.target.value })}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="editArticleType">Type:</label>
+              <input
+                id="editArticleType"
+                type="text"
+                value={newArticleData.type}
+                onChange={(e) => setNewArticleData({ ...newArticleData, type: e.target.value })}
+                required
+              />
+            </div>
+            <button type="submit" className="modal-submit-button">Update Article</button>
+          </form>
+        )}
+      </Modal>
+
       {/* Add New Menu Modal */}
       <Modal isOpen={showAddMenuModal} onClose={closeAddMenuModal} title="Add New Menu">
         <form onSubmit={(e) => {
           e.preventDefault();
-          createMenu(newMenuData); // Call the creation function
+          createMenu(newMenuData);
         }}>
           <div className="form-group">
-            <label htmlFor="menuName">Name:</label>
+            <label htmlFor="addMenuName">Name:</label>
             <input
-              id="menuName"
+              id="addMenuName"
               type="text"
               value={newMenuData.name}
               onChange={(e) => setNewMenuData({ ...newMenuData, name: e.target.value })}
@@ -398,18 +497,18 @@ const RestaurantOwnerDashboard = () => {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="menuDescription">Description:</label>
+            <label htmlFor="addMenuDescription">Description:</label>
             <textarea
-              id="menuDescription"
+              id="addMenuDescription"
               value={newMenuData.description}
               onChange={(e) => setNewMenuData({ ...newMenuData, description: e.target.value })}
               required
             ></textarea>
           </div>
           <div className="form-group">
-            <label htmlFor="menuCategory">Category:</label>
+            <label htmlFor="addmenuCategory">Category:</label>
             <input
-              id="menuCategory"
+              id="addmenuCategory"
               type="text"
               value={newMenuData.category}
               onChange={(e) => setNewMenuData({ ...newMenuData, category: e.target.value })}
@@ -417,9 +516,9 @@ const RestaurantOwnerDashboard = () => {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="menuPrice">Price:</label>
+            <label htmlFor="addMenuPrice">Price:</label>
             <input
-              id="menuPrice"
+              id="addMenuPrice"
               type="number"
               step="0.01"
               value={newMenuData.price}
@@ -427,10 +526,60 @@ const RestaurantOwnerDashboard = () => {
               required
             />
           </div>
-          {/* Note: Adding articles to a menu would require a more complex selection UI (e.g., multi-select dropdown)
-              For now, the 'articles' field is omitted from the input form for simplicity. */}
           <button type="submit" className="modal-submit-button">Add Menu</button>
         </form>
+      </Modal>
+
+      {/* Edit Menu Modal */}
+      <Modal isOpen={showEditMenuModal} onClose={closeEditMenuModal} title="Edit Menu">
+        {editingMenu && ( // Only render form if a menu is being edited
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            handleUpdateMenu(editingMenu._id, newMenuData); // Pass ID and updated data
+          }}>
+            <div className="form-group">
+              <label htmlFor="editMenuName">Name:</label>
+              <input
+                id="editMenuName"
+                type="text"
+                value={newMenuData.name}
+                onChange={(e) => setNewMenuData({ ...newMenuData, name: e.target.value })}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="editMenuDescription">Description:</label>
+              <textarea
+                id="editMenuDescription"
+                value={newMenuData.description}
+                onChange={(e) => setNewMenuData({ ...newMenuData, description: e.target.value })}
+                required
+              ></textarea>
+            </div>
+            <div className="form-group">
+              <label htmlFor="editmenuCategory">Category:</label>
+              <input
+                id="editmenuCategory"
+                type="text"
+                value={newMenuData.category}
+                onChange={(e) => setNewMenuData({ ...newMenuData, category: e.target.value })}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="editMenuPrice">Price:</label>
+              <input
+                id="editMenuPrice"
+                type="number"
+                step="0.01"
+                value={newMenuData.price}
+                onChange={(e) => setNewMenuData({ ...newMenuData, price: parseFloat(e.target.value) })}
+                required
+              />
+            </div>
+            <button type="submit" className="modal-submit-button">Update Menu</button>
+          </form>
+        )}
       </Modal>
     </div>
   );

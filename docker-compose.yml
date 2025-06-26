@@ -33,7 +33,7 @@ services:
     build: ./Restaurant/Article 
     container_name: article_service
     expose:
-      - "5007"
+      - "5007:5007"
     restart: always
     networks:
       - backend-net 

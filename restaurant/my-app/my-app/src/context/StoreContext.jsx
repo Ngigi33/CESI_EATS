@@ -129,7 +129,7 @@ const StoreContextProvider = (props) => {
                     // Otherwise, construct the full URL.
                     const imageUrl = item.image.startsWith('http')
                         ? item.image
-                        : `/api/images/food/${item.image}`;
+                        : `${baseUrl}/api/images/food/${item.image}`;
 
                     return {
                         _id: item._id,

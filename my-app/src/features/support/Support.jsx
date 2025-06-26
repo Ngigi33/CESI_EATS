@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { FileText, ShoppingBag, Building2, Menu, ExternalLink, Zap, Globe, RefreshCw } from 'lucide-react';
 import { 
   Settings, 
   Database, 
@@ -17,6 +18,289 @@ import {
   Package
 } from 'lucide-react';
 import './Support.css';
+
+
+const ApiDocsViewer = () => {
+  const [activeUrl, setActiveUrl] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadError, setLoadError] = useState(false);
+
+  const apiEndpoints = [
+    {
+      name: 'Orders',
+      url: 'http://localhost:4002/api-docs/order',
+      icon: <ShoppingBag className="w-5 h-5" />,
+      color: 'from-blue-500 to-blue-600',
+      hoverColor: 'from-blue-600 to-blue-700',
+      description: 'Gestion des commandes et paiements'
+    },
+    {
+      name: 'Restaurant',
+      url: 'http://localhost:4002/api-docs/restaurant',
+      icon: <Building2 className="w-5 h-5" />,
+      color: 'from-emerald-500 to-emerald-600',
+      hoverColor: 'from-emerald-600 to-emerald-700',
+      description: 'Informations des restaurants'
+    },
+    {
+      name: 'Menu',
+      url: 'http://localhost:4002/api-docs/menu',
+      icon: <Menu className="w-5 h-5" />,
+      color: 'from-purple-500 to-purple-600',
+      hoverColor: 'from-purple-600 to-purple-700',
+      description: 'Cartes et menus disponibles'
+    },
+    {
+      name: 'Article',
+      url: 'http://localhost:4002/api-docs/article',
+      icon: <Package className="w-5 h-5" />,
+      color: 'from-orange-500 to-orange-600',
+      hoverColor: 'from-orange-600 to-orange-700',
+      description: 'Articles et produits'
+    }
+  ];
+
+  const handleLoadPage = (url) => {
+    setIsLoading(true);
+    setLoadError(false);
+    setActiveUrl(url);
+    
+    // Simuler un délai de chargement réaliste
+    setTimeout(() => setIsLoading(false), 800);
+  };
+
+  const handleIframeLoad = () => {
+    setIsLoading(false);
+    setLoadError(false);
+  };
+
+  const handleIframeError = () => {
+    setIsLoading(false);
+    setLoadError(true);
+  };
+
+  const refreshPage = () => {
+    if (activeUrl) {
+      handleLoadPage(activeUrl);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      {/* Header avec effet glassmorphism */}
+      <div className="backdrop-blur-md bg-white/80 shadow-lg border-b border-white/20 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="p-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl shadow-lg">
+                <FileText className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                  Documentation API
+                </h1>
+                <p className="text-gray-600 mt-1">Interface moderne pour explorer vos APIs</p>
+              </div>
+            </div>
+            
+            {activeUrl && (
+              <button
+                onClick={refreshPage}
+                className="flex items-center gap-2 px-4 py-2 bg-white/70 hover:bg-white/90 rounded-lg shadow-md transition-all duration-200 border border-gray-200/50"
+              >
+                <RefreshCw className="w-4 h-4" />
+                <span className="text-sm font-medium">Actualiser</span>
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Navigation Cards avec animations */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-6">
+            <Zap className="w-6 h-6 text-indigo-600" />
+            <h2 className="text-2xl font-bold text-gray-800">Sélectionnez une documentation</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {apiEndpoints.map((endpoint, index) => (
+              <div
+                key={index}
+                className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
+              >
+                <button
+                  onClick={() => handleLoadPage(endpoint.url)}
+                  className={`w-full h-full bg-gradient-to-br ${endpoint.color} hover:${endpoint.hoverColor} text-white p-6 transition-all duration-300 group-hover:scale-105`}
+                >
+                  {/* Effet de brillance */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                  
+                  <div className="relative z-10">
+                    <div className="flex items-center justify-center mb-4">
+                      <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                        {endpoint.icon}
+                      </div>
+                    </div>
+                    
+                    <h3 className="text-xl font-bold mb-2">{endpoint.name}</h3>
+                    <p className="text-white/80 text-sm leading-relaxed">
+                      {endpoint.description}
+                    </p>
+                    
+                    <div className="mt-4 flex items-center justify-center gap-2 text-sm">
+                      <ExternalLink className="w-4 h-4" />
+                      <span>Ouvrir la documentation</span>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Zone de contenu principal */}
+        {activeUrl ? (
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden border border-white/50 w-full">
+            {/* Barre d'informations */}
+            <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200/50 flex-shrink-0">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Globe className="w-5 h-5 text-gray-600" />
+                  <span className="text-sm font-medium text-gray-700">Documentation active</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                    En ligne
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Zone iframe avec loading amélioré */}
+            <div className="relative" style={{ height: '90vh' }}>
+              {isLoading && (
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center z-20">
+                  <div className="text-center">
+                    <div className="relative mb-6">
+                      <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 mx-auto"></div>
+                      <div className="absolute inset-0 rounded-full border-4 border-transparent border-r-blue-400 animate-pulse"></div>
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                      Chargement de la documentation
+                    </h3>
+                    <p className="text-gray-600">Préparation de l'interface...</p>
+                  </div>
+                </div>
+              )}
+
+              {loadError ? (
+                <div className="h-full flex items-center justify-center bg-gradient-to-br from-red-50 to-pink-50">
+                  <div className="text-center p-8">
+                    <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <ExternalLink className="w-8 h-8 text-red-600" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                      Impossible de charger la documentation
+                    </h3>
+                    <p className="text-gray-600 mb-4">
+                      Vérifiez que le serveur est en marche sur le port 4002
+                    </p>
+                    <button
+                      onClick={refreshPage}
+                      className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200"
+                    >
+                      Réessayer
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <iframe style={{ height: 'calc(100vh - 200px)' }}
+                  src={activeUrl}
+                  className="w-full h-full border-0"
+                  onLoad={handleIframeLoad}
+                  onError={handleIframeError}
+                  title="Documentation API"
+                  sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+                />
+              )}
+            </div>
+            
+            {/* Footer de l'iframe */}
+            <div className="bg-gray-50/80 backdrop-blur-sm px-6 py-3 border-t border-gray-200/50 flex-shrink-0">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <p className="text-sm text-gray-600 truncate flex-1 min-w-0">
+                  <span className="font-medium">URL :</span> 
+                  <span className="ml-2 font-mono text-xs bg-gray-200 px-2 py-1 rounded">
+                    {activeUrl}
+                  </span>
+                </p>
+                <a
+                  href={activeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors duration-200 whitespace-nowrap"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  <span className="hidden sm:inline">Ouvrir dans un nouvel onglet</span>
+                  <span className="sm:hidden">Nouvel onglet</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* Placeholder état initial amélioré */
+          <div className="bg-white/60 backdrop-blur-sm rounded-2xl shadow-xl p-16 text-center border border-white/50">
+            <div className="max-w-md mx-auto">
+              <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <FileText className="w-12 h-12 text-blue-600" />
+              </div>
+              
+              <h3 className="text-2xl font-bold text-gray-800 mb-4">
+                Prêt à explorer vos APIs
+              </h3>
+              
+              <p className="text-gray-600 mb-8 leading-relaxed">
+                Sélectionnez une documentation dans les cartes ci-dessus pour commencer. 
+                Chaque section offre une interface interactive complète.
+              </p>
+              
+              <div className="flex items-center justify-center gap-4 text-sm text-gray-500">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span>4 endpoints disponibles</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <span>Documentation interactive</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Footer moderne */}
+      <footer className="bg-white/70 backdrop-blur-sm border-t border-white/20 mt-16">
+        <div className="max-w-7xl mx-auto px-6 py-6">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-gray-600">
+              <span className="font-medium">API Documentation Viewer</span> - Interface moderne pour vos documentations
+            </p>
+            <div className="flex items-center gap-4 text-xs text-gray-500">
+              <span>Version 2.0</span>
+              <span>•</span>
+              <span>Optimisé pour l'expérience utilisateur</span>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export { ApiDocsViewer };
 
 const Support = () => {
   const [activeTab, setActiveTab] = useState('components');
@@ -269,97 +553,7 @@ const Support = () => {
         )}
 
         {activeTab === 'routes' && (
-          <div className="tab-content">
-            <h2>Route Orchestration</h2>
-            <div className="routes-table">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Route Path</th>
-                    <th>Method</th>
-                    <th>Average Latency</th>
-                    <th>Requests/Hour</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {routes.map(route => (
-                    <tr key={route.id}>
-                      <td><code>{route.path}</code></td>
-                      <td><span className="method-badge">{route.method}</span></td>
-                      <td>{route.latency}</td>
-                      <td>{route.requests}</td>
-                      <td>
-                        <button className="edit-btn">
-                          <Settings size={16} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'deployment' && (
-          <div className="tab-content">
-            <h2>Service Deployment</h2>
-            <div className="deployment-section">
-              <div className="deployment-card">
-                <h3>Deploy New Service</h3>
-                <div className="deployment-form">
-                  <div className="form-group">
-                    <label>Service Name</label>
-                    <input type="text" placeholder="Enter service name" />
-                  </div>
-                  <div className="form-group">
-                    <label>Docker Image</label>
-                    <input type="text" placeholder="registry/image:tag" />
-                  </div>
-                  <div className="form-group">
-                    <label>Environment</label>
-                    <select>
-                      <option>Production</option>
-                      <option>Staging</option>
-                      <option>Development</option>
-                    </select>
-                  </div>
-                  <div className="form-actions">
-                    <button type="button" className="deploy-btn">
-                      Deploy Service
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div className="deployment-status">
-                <h3>Recent Deployments</h3>
-                <div className="deployment-history">
-                  <div className="deployment-item">
-                    <CheckCircle className="status-icon success" size={20} />
-                    <div className="deployment-info">
-                      <p>Payment Service v2.1.4</p>
-                      <span>Deployed 2 hours ago</span>
-                    </div>
-                  </div>
-                  <div className="deployment-item">
-                    <Clock className="status-icon pending" size={20} />
-                    <div className="deployment-info">
-                      <p>Notification Service v1.5.1</p>
-                      <span>Deploying...</span>
-                    </div>
-                  </div>
-                  <div className="deployment-item">
-                    <CheckCircle className="status-icon success" size={20} />
-                    <div className="deployment-info">
-                      <p>User Auth Service v1.8.3</p>
-                      <span>Deployed 1 day ago</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <ApiDocsViewer />
         )}
       </main>
     </div>

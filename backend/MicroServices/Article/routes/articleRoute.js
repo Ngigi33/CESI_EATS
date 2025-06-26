@@ -1,13 +1,83 @@
 // backend/MicroServices/Article/routes/articleRoute.js
-
-// backend/MicroServices/Article/routes/articleRoute.js
-
+/**
+ * @swagger
+ *  components:
+ *    schemas:
+ *      Article:
+ *        type: object
+ *        required: 
+ *          - restaurantId
+ *          - name
+ *          - description
+ *          - price
+ *          - image
+ *          - type
+ *          - category
+ *          - restaurantName
+ *          - available
+ *          properties:
+ *            id :
+ *              type: string
+ *              description: the auto-generate id of the book
+ *            restaurantId:
+ *              type: string
+ *              description: unique
+ *            name:
+ *              type: string
+ *              description: unique
+ *            description:
+ *              type: string
+ *              description: description de l'article
+ *            type:
+ *              type: string
+ *              description: type de l'article
+ *            category:
+ *                type: string
+ *                description: category of the article
+ *             price:
+ *                type: number
+ *                description: price of the article
+ *             restaurantName:
+ *                type: string
+ *                description: restaurant name of the article
+ *             available:
+ *                type: boolean
+ *                description: availability of the article
+ *
+ */
 import express from 'express';
 import Article from '../models/articleModel.js';
 
 const articleRouter = express.Router();
 
 // GET all articles
+
+
+/**
+ * @swagger
+ * /articles/{id}:
+ *   get:
+ *     summary: Retrieve an article by ID
+ *     tags: [Articles]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the article
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Article found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Article'
+ *       404:
+ *         description: Article not found
+ */
+
+
 articleRouter.get('/', async (req, res) => {
     try {
         const articles = await Article.find({});
@@ -38,6 +108,31 @@ articleRouter.get('/', async (req, res) => {
         });
     }
 });
+
+
+/**
+ * @swagger
+ * /articles:
+ *   get:
+ *     summary: Retrieve all articles
+ *     tags: [Articles]
+ *     responses:
+ *       200:
+ *         description: List of articles
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Article'
+ *                 message:
+ *                   type: string
+ */
 
 // GET article by ID
 articleRouter.get('/:id', async (req, res) => {
@@ -72,8 +167,36 @@ articleRouter.get('/:id', async (req, res) => {
         });
     }
 });
-
-// GET articles by restaurant
+/**
+ * @swagger
+ * /articles/restaurant/{restaurantId}:
+ *   get:
+ *     summary: Retrieve articles by restaurant ID
+ *     tags: [Articles]
+ *     parameters:
+ *       - in: path
+ *         name: restaurantId
+ *         required: true
+ *         description: ID of the restaurant
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of restaurant's articles
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Article'
+ *                 message:
+ *                   type: string
+ */
 articleRouter.get('/restaurant/:restaurantId', async (req, res) => {
     try {
         const articles = await Article.find({ restaurantId: req.params.restaurantId });
@@ -105,6 +228,31 @@ articleRouter.get('/restaurant/:restaurantId', async (req, res) => {
     }
 });
 
+
+/**
+ * @swagger
+ * /articles:
+ *   post:
+ *     summary: Create a new article
+ *     tags: [Articles]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Article'
+ *     responses:
+ *       201:
+ *         description: Article created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Article'
+ *       400:
+ *         description: Invalid input
+ */
+
+
 // POST create new article
 articleRouter.post('/', async (req, res) => {
     try {
@@ -126,7 +274,33 @@ articleRouter.post('/', async (req, res) => {
     }
 });
 
-// PATCH update article
+
+/**
+ * @swagger
+ * /articles/{id}:
+ *   patch:
+ *     summary: Update an article by ID
+ *     tags: [Articles]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the article
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Article'
+ *     responses:
+ *       200:
+ *         description: Article updated
+ *       404:
+ *         description: Article not found
+ */
+
 articleRouter.patch('/:id', async (req, res) => {
     try {
         const updatedArticle = await Article.findByIdAndUpdate(
@@ -156,6 +330,27 @@ articleRouter.patch('/:id', async (req, res) => {
         });
     }
 });
+
+
+/**
+ * @swagger
+ * /articles/{id}:
+ *   delete:
+ *     summary: Delete an article by ID
+ *     tags: [Articles]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the article
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Article deleted successfully
+ *       404:
+ *         description: Article not found
+ */
 
 // DELETE article
 articleRouter.delete('/:id', async (req, res) => {

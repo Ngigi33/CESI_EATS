@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "main": "orderServer.js",
   "type": "module",
-  
   "dependencies": {
     "accepts": "^2.0.0",
     "anymatch": "^3.1.3",
@@ -102,6 +101,8 @@
     "sparse-bitfield": "^3.0.3",
     "statuses": "^2.0.2",
     "supports-color": "^5.5.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "to-regex-range": "^5.0.1",
     "toidentifier": "^1.0.1",
     "touch": "^3.1.1",
@@ -118,8 +119,8 @@
     "nodemon": "^3.1.10"
   },
   "scripts": {
-    "dev": "nodemon orderServer.js", 
-    "start": "node orderServer.js",  
+    "dev": "nodemon orderServer.js",
+    "start": "node orderServer.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

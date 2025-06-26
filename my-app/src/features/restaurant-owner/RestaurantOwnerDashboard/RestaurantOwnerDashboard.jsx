@@ -23,107 +23,123 @@ const RestaurantOwnerDashboard = ({ setShowLogin }) => {
     avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
   };
 
-//   useEffect(() => {
-//   const fetchData = async () => {
-//     try {
-//       const resRestaurants = await fetch('api/restaurants');
-//       const dataRestaurants = await resRestaurants.json();
-//       setRestaurants(dataRestaurants);
-
-//       const resArticles = await fetch('/api/articles');
-//       const dataArticles = await resArticles.json();
-//       setArticles(dataArticles);
-
-//       const resMenus = await fetch('/api/menus');
-//       const dataMenus = await resMenus.json();
-//       setMenus(dataMenus);
-
-//       const resOrders = await fetch('/api/orders');
-//       const dataOrders = await resOrders.json();
-//       setOrders(dataOrders);
-
-//     } catch (error) {
-//       console.error('Erreur lors du chargement des données', error);
-//     }
-//   };
-
-//   fetchData();
-// }, []);
-
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const resArticles = await fetch('/api/articles');
-        const dataArticles = await resArticles.json();
-        setArticles(dataArticles);
-      } catch (error) {
-        console.error('Erreur lors du chargement des données', error);
-      }
-    };
+  const fetchData = async () => {
+    try {
+      const [resRestaurants, resArticles, resMenus, resOrders] = await Promise.all([
+        fetch('http://localhost:4004/restaurants/owner/6859bab946b06892e6'),
+        fetch('http://localhost:4005/articles/restaurant/6859bab946b06892e6'),
+        fetch('http://localhost:4002/api/menu/68564ca2658c8cfe0892bad4'),
+        fetch('http://localhost:4003/orders'),
+      ]);
 
-    fetchData();
-  }, []);
+      const [dataRestaurants, dataArticles, dataMenus, dataOrders] = await Promise.all([
+        resRestaurants.json(),
+        resArticles.json(),
+        resMenus.json(),
+        resOrders.json(),
+      ]);
 
-      {
-        id: 2,
-        restaurantId: 1,
-        name: "Tarte Tatin",
-        image: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?w=200&h=150&fit=crop",
-        description: "Caramelized apple dessert",
-        price: 8.5,
-        type: "dessert"
-      }
-    ]);
-    setMenus([
-      {
-        id: 1,
-        restaurantId: 1,
-        name: "Chef's Menu",
-        description: "Our selection of signature dishes",
-        category: "full-menu",
-        articles: [1, 2],
-        price: 25.0
-      }
-    ]);
-    setOrders([
-      {
-        id: 1,
-        userId: 101,
-        deliveryNumber: 2024001,
-        restaurantId: 1,
-        address: "456 Avenue Victor Hugo, Lyon",
-        created: new Date().toISOString(),
-        status: "pending",
-        accepted: null,
-        price: 25.0,
-        menus: [1],
-        articles: []
-      },
-      {
-        id: 2,
-        userId: 102,
-        deliveryNumber: 2024002,
-        restaurantId: 1,
-        address: "789 Rue de la République, Lyon",
-        created: new Date(Date.now() - 3600000).toISOString(),
-        status: "accepted",
-        accepted: true,
-        price: 18.5,
-        menus: [],
-        articles: [1]
-      }
-    ]);
-  }, []);
+      setRestaurants(dataRestaurants);
+      setArticles(dataArticles);
+      setMenus(dataMenus);
+      setOrders(dataOrders);
 
-  const stats = {
-    totalOrders: orders.length,
-    pendingOrders: orders.filter(o => o.status === 'pending').length,
-    totalRevenue: orders.reduce((sum, order) => sum + order.price, 0),
-    avgOrderValue:
-      orders.length > 0
-        ? (orders.reduce((sum, order) => sum + order.price, 0) / orders.length).toFixed(2)
-        : 0
+      console.log({ dataRestaurants, dataArticles, dataMenus, dataOrders });
+
+    } catch (error) {
+      console.error('Erreur lors du chargement des données', error);
+    }
   };
+
+  fetchData();
+}, []);
+
+
+  // useEffect(() => {
+  //   const fetchDataArticle = async () => {
+  //     try {
+  //       const resArticles = await fetch('/api/articles');
+  //       const dataArticles = await resArticles.json();
+  //       setArticles(dataArticles);
+  //     } catch (error) {
+  //       console.error('Erreur lors du chargement des données', error);
+  //     }
+  //   };
+
+  //   fetchDataArticle();
+
+  //   // Mock data initialization
+  //   setRestaurants([
+  //     {
+  //       id: 2,
+  //       restaurantId: 1,
+  //       name: "Tarte Tatin",
+  //       image: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?w=200&h=150&fit=crop",
+  //       description: "Caramelized apple dessert",
+  //       price: 8.5,
+  //       type: "dessert"
+  //     }
+  //   ]);
+  //   setMenus([
+  //     {
+  //       id: 1,
+  //       restaurantId: 1,
+  //       name: "Chef's Menu",
+  //       description: "Our selection of signature dishes",
+  //       category: "full-menu",
+  //       articles: [1, 2],
+  //       price: 25.0
+  //     }
+  //   ]);
+  //   setOrders([
+  //     {
+  //       id: 1,
+  //       userId: 101,
+  //       deliveryNumber: 2024001,
+  //       restaurantId: 1,
+  //       address: "456 Avenue Victor Hugo, Lyon",
+  //       created: new Date().toISOString(),
+  //       status: "pending",
+  //       accepted: null,
+  //       price: 25.0,
+  //       menus: [1],
+  //       articles: []
+  //     },
+  //     {
+  //       id: 2,
+  //       userId: 102,
+  //       deliveryNumber: 2024002,
+  //       restaurantId: 1,
+  //       address: "789 Rue de la République, Lyon",
+  //       created: new Date(Date.now() - 3600000).toISOString(),
+  //       status: "accepted",
+  //       accepted: true,
+  //       price: 18.5,
+  //       menus: [],
+  //       articles: [1]
+  //     }
+  //   ]);
+  // }, []);
+
+const stats = {
+  totalOrders: orders.length,
+  pendingOrders: orders.filter(o => o.status === 'pending').length,
+  totalRevenue: orders.reduce((sum, order) => sum + order.price, 0),
+  avgOrderValue:
+    orders.length > 0
+      ? (orders.reduce((sum, order) => sum + order.price, 0) / orders.length)
+      : 0
+};
+
+
+for (let i = 0; i < orders.length; i++) {
+  stats.totalPrice += orders[i].price;
+}
+if (orders.length > 0) {
+  stats.avgOrderValue = (stats.totalPrice / orders.length);
+}
+
 
   const Sidebar = () => (
     <div className="sidebar">
@@ -220,6 +236,7 @@ const RestaurantOwnerDashboard = ({ setShowLogin }) => {
     switch (activeTab) {
       case 'dashboard': return <DashboardContent />;
       case 'addItems': return <Add />;
+      case 'listItems': return <List></List>;
 
       default:
         return (

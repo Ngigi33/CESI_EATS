@@ -13,8 +13,9 @@ import fs from 'fs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const app = express();
-const port = process.env.PORT || 4005;
-
+const port = process.env.PORT || 4003;
+import swaggerjsdoc from 'swagger-jsdoc';
+import swaggerui from 'swagger-ui-express';
 // CORS très permissif
 app.use(cors({
     origin: '*',
@@ -98,6 +99,24 @@ app.get('/test-image/:filename', (req, res) => {
     }
 });
 
+const options = {
+    definition: {
+        openapi: '3.0.0',
+        info: {
+            title: "article api",
+            version: "1.0.0"
+        },
+        servers: [
+            {
+                url: `http://localhost:${port}`,
+            },
+        ],
+    },
+    apis: ['./routes/*.js'], // Chemin vers les fichiers contenant les commentaires Swagger
+};
+
+const specs = swaggerjsdoc(options);
+app.use('/api-docs/article', swaggerui.serve, swaggerui.setup(specs));
 app.listen(port, () => {
     console.log(`Article Service running on http://localhost:${port}`);
     console.log(`Images path: ${imagesPath}`);

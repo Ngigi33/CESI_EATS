@@ -27,12 +27,13 @@ export const createOrder = async (req, res) => {
     );
 
     // 3. Call the payment microservice to create a payment intent
-    const paymentResponse = await axios.post('http://localhost:5002/api/payments/createCheckoutSession', {
+    const paymentResponse = await axios.post('http://payment_service:5010/api/payments/createCheckoutSession', {
       new_order_id: new_order._id,
       cartItems: req.body.items,
       customerId: req.body.userId,
       restaurantId: req.body.restaurantId || 'default_restaurant_id',
     });
+
 
     const checkoutUrl = paymentResponse.data.url;
 
@@ -51,13 +52,13 @@ export const createOrder = async (req, res) => {
 
 };
 
-export const listOrders = async (req, res) =>{
-  try{
+export const listOrders = async (req, res) => {
+  try {
     const orders = await orderModel.find({})
-    res.json({success:true, data:orders})
-  }catch(error){
+    res.json({ success: true, data: orders })
+  } catch (error) {
     console.log(error)
-    res.json({success:false, message: error.message})
+    res.json({ success: false, message: error.message })
   }
 }
 
@@ -68,7 +69,7 @@ export const verifyOrder = async (req, res) => {
 
   try {
     if (success == "true") {
-      await orderModel.findByIdAndUpdate(orderID, { payment: true }, {new:true});
+      await orderModel.findByIdAndUpdate(orderID, { payment: true }, { new: true });
       res.json({ success: true, message: "Paid" });
     }
     else {
@@ -109,22 +110,22 @@ export const getOrdersByUser = async (req, res) => {
   }
 };
 
-export const updateDriverStatus = async(req, res) =>{
-  try{
-    await orderModel.findByIdAndUpdate(req.body.orderID, {driverstatus: req.body.driverstatus})
-    res.json({success:true, message: "Status updated"})
+export const updateDriverStatus = async (req, res) => {
+  try {
+    await orderModel.findByIdAndUpdate(req.body.orderID, { driverstatus: req.body.driverstatus })
+    res.json({ success: true, message: "Status updated" })
   }
-  catch(error){
-    res.status(500).json({error: 'Status update failed'})
+  catch (error) {
+    res.status(500).json({ error: 'Status update failed' })
   }
 }
 
-export const deleteOrder = async (req,res) => {
-  try{
-    await orderModel.findByIdAndUpdate(req.body.orderID, {status: req.body.status})
-    res.json({success:true, messsage: "Status updated"})
-  } catch(error){
-    res.status(500).json({error: 'Status update failed'})
+export const deleteOrder = async (req, res) => {
+  try {
+    await orderModel.findByIdAndUpdate(req.body.orderID, { status: req.body.status })
+    res.json({ success: true, messsage: "Status updated" })
+  } catch (error) {
+    res.status(500).json({ error: 'Status update failed' })
   }
 }
 

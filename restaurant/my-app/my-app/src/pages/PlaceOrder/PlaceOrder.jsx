@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import './PlaceOrder.css'
 import { StoreContext } from '../../context/StoreContext'
 import axios from 'axios'
+axios.defaults.baseURL = "/"
 
 const PlaceOrder = () => {
 

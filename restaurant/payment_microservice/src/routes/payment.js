@@ -95,8 +95,8 @@ router.post('/createCheckoutSession', async (req, res) => {
         customerId,
         restaurantId,
       },
-      success_url: `http://localhost:5173/verify?success=true&orderId=${new_order_id}`,
-      cancel_url: `http://localhost:5173/cancel`,
+      success_url: `http://localhost:80/verify?success=true&orderId=${new_order_id}`,
+      cancel_url: `http://localhost:80/cancel`,
     });
 
     res.status(200).json({ url: session.url });

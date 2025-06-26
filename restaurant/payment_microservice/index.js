@@ -16,6 +16,6 @@ app.use('/api/payments', paymentRoutes);
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
-    app.listen(5002, () => console.log('Payment service running on port 5002'));
+    app.listen(5010, () => console.log('Payment service running on port 5010'));
   })
   .catch(err => console.error(err));

@@ -12,7 +12,7 @@ dotenv.config()
 
 const app=express()
 const corsOptions = {
-    origin: "http://localhost:5173", //5173 for Vite frontend and 8080 for localhost
+    origin: "http://localhost", //5173 for Vite frontend and 8080 for localhost
     credentials: true
 }
 

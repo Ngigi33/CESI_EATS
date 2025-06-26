@@ -21,7 +21,7 @@ services:
       - backend-net
 
   restaurant_service:
-    build: ./restaurant/Restaurant
+    build: ./Restaurant/Restaurant
     container_name: restaurant_service
     expose: 
       - "5006"
@@ -30,7 +30,7 @@ services:
       - backend-net
 
   article_service:
-    build: ./restaurant/Article 
+    build: ./Restaurant/Article 
     container_name: article_service
     expose:
       - "5007"
@@ -39,10 +39,10 @@ services:
       - backend-net 
 
   delivery_service:
-    build: ./restaurant/delivery-microservice
+    build: ./Restaurant/delivery-microservice
     container_name: delivery_service
     env_file:
-      - ./restaurant/delivery-microservice/.env
+      - ./Restaurant/delivery-microservice/.env
     expose:
       - "5008"
     restart: always
@@ -52,10 +52,10 @@ services:
       - backend-net  
 
   order_service:
-    build: ./restaurant/order_microservice
+    build: ./Restaurant/order_microservice
     container_name: order_service
     env_file:
-      - ./restaurant/order_microservice/.env
+      - ./Restaurant/order_microservice/.env
     expose:
       - "5009"
     restart: always
@@ -65,10 +65,10 @@ services:
       - backend-net  
     
   payment_service:
-    build: ./restaurant/payment_microservice
+    build: ./Restaurant/payment_microservice
     container_name: payment_service
     env_file:
-      - ./restaurant/payment_microservice/.env
+      - ./Restaurant/payment_microservice/.env
     expose:
       - "5010"
     restart: always
@@ -80,7 +80,7 @@ services:
 
   ##frontend
   frontend:
-    build: ./restaurant/my-app/my-app
+    build: ./Restaurant/my-app/my-app
     container_name: frontend
     expose:
       - "80"

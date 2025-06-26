@@ -1,10 +1,8 @@
-const express = require('express');
+import express from 'express';
+import { updateDriverStatus_in_order } from '../controllers/deliveryController.js';
 const router = express.Router();
-const deliveryController = require('../controllers/deliveryController');
 
-router.post('/', deliveryController.createDelivery);
-router.patch('/:id/status', deliveryController.updateStatus);
-router.patch('/:id/confirm', deliveryController.confirmDelivery);
-router.get('/order/:orderId', deliveryController.getByOrder);
+router.patch('/driver_status', updateDriverStatus_in_order);
 
-module.exports = router;
+export default router;
+

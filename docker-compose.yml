@@ -1,6 +1,5 @@
 version: '3.8'
 
-
 services:
 
   ##Microservices config
@@ -23,23 +22,22 @@ services:
   restaurant_service:
     build: ./Restaurant/Restaurant
     container_name: restaurant_service
-    expose: 
-      - "5006"
+    expose:
+      - "5006:5006"
     restart: always
-    networks: 
+    networks:
       - backend-net
 
   article_service:
-    build: ./Restaurant/Article 
+    build: ./Restaurant/Article
     container_name: article_service
     expose:
       - "5007:5007"
     volumes:
       - "/c/Users/Administrator/Documents/Intership and Attachments/CESI Exchange/Study/Elective Software Development/CESI_Eats - Copy/public/images:/app/public/images"
-
     restart: always
     networks:
-      - backend-net 
+      - backend-net
 
   delivery_service:
     build: ./Restaurant/delivery-microservice
@@ -52,7 +50,7 @@ services:
     depends_on:
       - order_service
     networks:
-      - backend-net  
+      - backend-net
 
   order_service:
     build: ./Restaurant/order_microservice
@@ -65,8 +63,8 @@ services:
     depends_on:
       - article_service
     networks:
-      - backend-net  
-    
+      - backend-net
+
   payment_service:
     build: ./Restaurant/payment_microservice
     container_name: payment_service
@@ -78,8 +76,7 @@ services:
     depends_on:
       - order_service
     networks:
-      - backend-net  
-  
+      - backend-net
 
   ##frontend
   frontend:
@@ -90,7 +87,6 @@ services:
     restart: always
     networks:
       - backend-net
-
 
   mysql:
     image: mysql:8.0
@@ -124,9 +120,9 @@ services:
     networks:
       - backend-net
 
-
 volumes:
   mysql-data:
+
 
 networks:
   backend-net:

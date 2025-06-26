@@ -23,7 +23,7 @@ app.use(cors({
 }));
 
 // Servir les images depuis backend/public/images/food
-const imagesPath = path.join(__dirname, '../../public/images/food');
+const imagesPath = path.join(__dirname, './public/images/food');
 console.log('Chemin des images:', imagesPath);
 
 // Headers pour les images
@@ -68,7 +68,7 @@ app.get('/test-images', (req, res) => {
             files: files,
             path: imagesPath,
             count: files.length,
-            sampleUrls: files.slice(0, 3).map(file => 
+            sampleUrls: files.slice(0, 3).map(file =>
                 `http://localhost:${port}/images/food/${file}`
             )
         });
@@ -86,7 +86,7 @@ app.get('/test-images', (req, res) => {
 app.get('/test-image/:filename', (req, res) => {
     const filename = req.params.filename;
     const filePath = path.join(imagesPath, filename);
-    
+
     if (fs.existsSync(filePath)) {
         res.sendFile(filePath);
     } else {
@@ -98,10 +98,10 @@ app.get('/test-image/:filename', (req, res) => {
     }
 });
 
-app.listen(port,'0.0.0.0',  () => {
+app.listen(port, '0.0.0.0', () => {
     console.log(`Article Service running on http://localhost:${port}`);
     console.log(`Images path: ${imagesPath}`);
-    
+
     // Vérifier si le dossier existe
     if (fs.existsSync(imagesPath)) {
         console.log('✅ Dossier images trouvé');

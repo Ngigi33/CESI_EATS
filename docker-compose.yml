@@ -60,9 +60,7 @@ services:
       - "5009"
     restart: always
     depends_on:
-      - delivery_service
       - article_service
-      - payment_service
     networks:
       - backend-net  
     
@@ -82,7 +80,7 @@ services:
 
   ##frontend
   frontend:
-    build: ./restaurant/my-app
+    build: ./restaurant/my-app/my-app
     container_name: frontend
     expose:
       - "80"

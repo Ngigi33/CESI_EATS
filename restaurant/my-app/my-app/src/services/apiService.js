@@ -1,31 +1,12 @@
-import axios from 'axios';
+import axios from 'axios'
+axios.defaults.baseURL = "/"
 
-// Configuration des URLs des microservices
-const API_CONFIG = {
-  ORDER_SERVICE: 'http://localhost:4003',
-  MENU_SERVICE: 'http://localhost:4002',
-  RESTAURANT_SERVICE: 'http://localhost:4004',
-  ARTICLE_SERVICE: 'http://localhost:4005' // URL pour le service Articles
-};
-
-// Configuration axios par défaut
-axios.defaults.timeout = 10000; // 10 secondes
-axios.defaults.headers.common['Content-Type'] = 'application/json';
-
-// Intercepteurs pour gérer les erreurs globalement
-axios.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    console.error('Erreur API:', error);
-    return Promise.reject(error);
-  }
-);
 
 // Service pour les commandes
 export const orderService = {
   getAllOrders: async () => {
     try {
-      const response = await axios.get(`${API_CONFIG.ORDER_SERVICE}/orders`);
+      const response = await axios.get(`/api/orders`);
       return response.data;
     } catch (error) {
       throw new Error('Erreur lors de la récupération des commandes');
@@ -33,7 +14,7 @@ export const orderService = {
   },
   getOrderById: async (orderId) => {
     try {
-      const response = await axios.get(`${API_CONFIG.ORDER_SERVICE}/orders/${orderId}`);
+      const response = await axios.get(`/api/orders/${orderId}`);
       return response.data;
     } catch (error) {
       throw new Error('Erreur lors de la récupération de la commande');
@@ -41,7 +22,7 @@ export const orderService = {
   },
   createOrder: async (orderData) => {
     try {
-      const response = await axios.post(`${API_CONFIG.ORDER_SERVICE}/orders`, orderData);
+      const response = await axios.post(`/api/orders`, orderData);
       return response.data;
     } catch (error) {
       throw new Error('Erreur lors de la création de la commande');
@@ -49,7 +30,7 @@ export const orderService = {
   },
   updateOrder: async (orderId, updateData) => {
     try {
-      const response = await axios.put(`${API_CONFIG.ORDER_SERVICE}/orders/${orderId}`, updateData);
+      const response = await axios.put(`/api/orders/${orderId}`, updateData);
       return response.data;
     } catch (error) {
       throw new Error('Erreur lors de la mise à jour de la commande');
@@ -57,7 +38,7 @@ export const orderService = {
   },
   deleteOrder: async (orderId) => {
     try {
-      const response = await axios.delete(`${API_CONFIG.ORDER_SERVICE}/orders/${orderId}`);
+      const response = await axios.delete(`/api/orders/${orderId}`);
       return response.data;
     } catch (error) {
       throw new Error('Erreur lors de la suppression de la commande');
@@ -69,7 +50,7 @@ export const orderService = {
 export const restaurantService = {
   getAllRestaurants: async () => {
     try {
-      const response = await axios.get(`${API_CONFIG.RESTAURANT_SERVICE}/restaurants`);
+      const response = await axios.get(`/api/restaurants`);
       return response.data;
     } catch (error) {
       throw new Error('Erreur lors de la récupération des restaurants');
@@ -77,7 +58,7 @@ export const restaurantService = {
   },
   getRestaurantById: async (restaurantId) => {
     try {
-      const response = await axios.get(`${API_CONFIG.RESTAURANT_SERVICE}/restaurants/${restaurantId}`);
+      const response = await axios.get(`/api/restaurants/${restaurantId}`);
       return response.data;
     } catch (error) {
       throw new Error(`Erreur lors de la récupération du restaurant ${restaurantId}`);
@@ -85,7 +66,7 @@ export const restaurantService = {
   },
   getRestaurantsByOwner: async (ownerId) => {
     try {
-      const response = await axios.get(`${API_CONFIG.RESTAURANT_SERVICE}/restaurants/owner/${ownerId}`);
+      const response = await axios.get(`/api/restaurants/owner/${ownerId}`);
       return response.data;
     } catch (error) {
       throw new Error(`Erreur lors de la récupération des restaurants de l'owner ${ownerId}`);
@@ -93,7 +74,7 @@ export const restaurantService = {
   },
   createRestaurant: async (restaurantData) => {
     try {
-      const response = await axios.post(`${API_CONFIG.RESTAURANT_SERVICE}/restaurants`, restaurantData);
+      const response = await axios.post(`/api/restaurants`, restaurantData);
       return response.data;
     } catch (error) {
       throw new Error('Erreur lors de la création du restaurant');
@@ -101,7 +82,7 @@ export const restaurantService = {
   },
   updateRestaurant: async (restaurantId, updateData) => {
     try {
-      const response = await axios.patch(`${API_CONFIG.RESTAURANT_SERVICE}/restaurants/${restaurantId}`, updateData);
+      const response = await axios.patch(`/api/restaurants/${restaurantId}`, updateData);
       return response.data;
     } catch (error) {
       throw new Error('Erreur lors de la mise à jour du restaurant');
@@ -109,7 +90,7 @@ export const restaurantService = {
   },
   deleteRestaurant: async (restaurantId) => {
     try {
-      const response = await axios.delete(`${API_CONFIG.RESTAURANT_SERVICE}/restaurants/${restaurantId}`);
+      const response = await axios.delete(`/api/restaurants/${restaurantId}`);
       return response.data;
     } catch (error) {
       throw new Error('Erreur lors de la suppression du restaurant');
@@ -121,7 +102,7 @@ export const restaurantService = {
 export const articleService = {
   getAllArticles: async () => {
     try {
-      const response = await axios.get(`${API_CONFIG.ARTICLE_SERVICE}/articles`);
+      const response = await axios.get(`/api/articles`);
       return response.data;
     } catch (error) {
       throw new Error('Erreur lors de la récupération des articles');
@@ -129,7 +110,7 @@ export const articleService = {
   },
   getArticleById: async (articleId) => {
     try {
-      const response = await axios.get(`${API_CONFIG.ARTICLE_SERVICE}/articles/${articleId}`);
+      const response = await axios.get(`/api/articles/${articleId}`);
       return response.data;
     } catch (error) {
       throw new Error(`Erreur lors de la récupération de l'article ${articleId}`);
@@ -137,7 +118,7 @@ export const articleService = {
   },
   getArticlesByRestaurant: async (restaurantId) => {
     try {
-      const response = await axios.get(`${API_CONFIG.ARTICLE_SERVICE}/articles/restaurant/${restaurantId}`);
+      const response = await axios.get(`/api/articles/restaurant/${restaurantId}`);
       return response.data;
     } catch (error) {
       throw new Error(`Erreur lors de la récupération des articles du restaurant ${restaurantId}`);
@@ -145,7 +126,7 @@ export const articleService = {
   },
   createArticle: async (articleData) => {
     try {
-      const response = await axios.post(`${API_CONFIG.ARTICLE_SERVICE}/articles`, articleData);
+      const response = await axios.post(`/api/articles`, articleData);
       return response.data;
     } catch (error) {
       throw new Error('Erreur lors de la création de l\'article');
@@ -153,7 +134,7 @@ export const articleService = {
   },
   updateArticle: async (articleId, updateData) => {
     try {
-      const response = await axios.patch(`${API_CONFIG.ARTICLE_SERVICE}/articles/${articleId}`, updateData);
+      const response = await axios.patch(`/api/articles/${articleId}`, updateData);
       return response.data;
     } catch (error) {
       throw new Error('Erreur lors de la mise à jour de l\'article');
@@ -161,7 +142,7 @@ export const articleService = {
   },
   deleteArticle: async (articleId) => {
     try {
-      const response = await axios.delete(`${API_CONFIG.ARTICLE_SERVICE}/articles/${articleId}`);
+      const response = await axios.delete(`/api/articles/${articleId}`);
       return response.data;
     } catch (error) {
       throw new Error('Erreur lors de la suppression de l\'article');
@@ -170,6 +151,7 @@ export const articleService = {
 };
 
 // Service pour les menus
+/*
 export const menuService = {
   getAllMenus: async () => {
     try {
@@ -195,9 +177,10 @@ export const menuService = {
       throw new Error(`Erreur lors de la récupération des menus du restaurant ${restaurantId}`);
     }
   }
-};
+}; */
 
 // Fonction utilitaire pour mapper les statuts de commande
+/*
 export const mapOrderStatus = (dbStatus, accepted) => {
   switch (dbStatus) {
     case 'pending':
@@ -218,13 +201,15 @@ export const mapOrderStatus = (dbStatus, accepted) => {
       }
       return { status: 'En attente', statusClass: 'pending' };
   }
-};
+}; */
 
 // Fonction utilitaire pour formater les dates
-export const formatDate = (dateString) => {
+/*export const formatDate = (dateString) => {
   const date = new Date(dateString);
   return {
     date: date.toLocaleDateString('fr-FR'),
     time: date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
   };
-};
+}; */
+
+export default axios

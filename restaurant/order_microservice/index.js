@@ -17,7 +17,7 @@ connectDB();
 app.use('/api/orders', orderRoutes);
 app.use('/api/cart', cartRoutes);
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 5009;
 
 app.listen(PORT, () => {
   console.log(`Order service running on port ${PORT}`);

@@ -8,9 +8,10 @@ export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
 
-    const url_order = 'http://localhost:3001'; 
-
+    const url_order = 'http://localhost:5009/api/orders'; //order service url from docker
+    const url_cart = 'http://localhost:5009/api/cart' // cart on order service
     const auth_url = "http://localhost:5000/api/auth" //user management url from docker
+    
     const [token, setToken] = useState("");
 
     // 1. Initialize cartItems by reading from Local Storage

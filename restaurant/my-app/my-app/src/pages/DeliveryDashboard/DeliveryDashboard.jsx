@@ -4,6 +4,8 @@ import './DeliveryDashboard.css';
 import axios from 'axios';
 import { toast } from "react-toastify"
 
+url_order = "http://localhost:5009/api/orders"
+
 const DeliveryDashboard = () => {
   const [activeTab, setActiveTab] = useState('available');
   const [deliveries, setDeliveries] = useState({

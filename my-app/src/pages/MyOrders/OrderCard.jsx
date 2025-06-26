@@ -12,13 +12,13 @@ const OrderCard = ({ order, isActive, onToggleActive, onCancelOrder }) => {
         onClick={() => onToggleActive(order.id)}
       >
         <div className="order-info">
-          <div className="order-id">Order #{order.id.substring(order.id.length - 4)}</div> {/* Displays last 4 characters */}
+          <div className="order-id">Order #{order.id.substring(order.id.length - 4)}</div> {/* Affiche les 4 derniers caractères */}
           <div className="order-restaurant">{order.restaurant}</div>
         </div>
         <div className="order-details">
-          {/* Displays date and time separately */}
+          {/* Affiche la date et l'heure séparément */}
           <div className="order-date">
-            {order.date} at {order.time}
+            {order.date} à {order.time}
           </div>
           <div className="order-price">{order.total}</div>
           <div className={statusClassName}>{order.status}</div>
@@ -34,7 +34,7 @@ const OrderCard = ({ order, isActive, onToggleActive, onCancelOrder }) => {
                 <OrderItem key={index} item={item} />
               ))
             ) : (
-              <p>No items.</p>
+              <p>Aucun article.</p>
             )}
           </div>
 
@@ -55,7 +55,7 @@ const OrderCard = ({ order, isActive, onToggleActive, onCancelOrder }) => {
 
             {order.statusClass === 'delivered' && (
               <button className="reorder-button">
-                Make Another Order
+                Make Other Order
               </button>
             )}
           </div>

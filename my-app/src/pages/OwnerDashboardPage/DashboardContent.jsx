@@ -107,7 +107,7 @@ const DashboardContent = ({
                   <p>{article.description}</p>
                   <p className="item-price">{article.price}€</p>
                   <div className="item-actions">
-                    <button className="edit-button" onClick={() => onEditArticleClick(article)}>
+                    <button className="edit-button" onClick={() => onEditArticleClick(article)}> {/* Edit button */}
                         <Edit size={16} /> Edit
                     </button>
                     <button onClick={() => handleDeleteArticle(article._id)}>Delete</button>
@@ -141,7 +141,7 @@ const DashboardContent = ({
                   <p>Category: {menu.category}</p>
                   <p className="item-price">{menu.price}€</p>
                   <div className="item-actions">
-                    <button className="edit-button" onClick={() => onEditMenuClick(menu)}>
+                    <button className="edit-button" onClick={() => onEditMenuClick(menu)}> {/* Edit button */}
                         <Edit size={16} /> Edit
                     </button>
                     <button onClick={() => handleDeleteMenu(menu._id)}>Delete</button>

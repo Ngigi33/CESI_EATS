@@ -87,7 +87,7 @@ const StoreContextProvider = (props) => {
                         image: imageUrl,
                         category: item.category || item.type,
                         type: item.type || item.category, // pour compatibilité si 'type' ou 'category' est utilisé
-                        restaurantName: item.restaurantName || 'Restaurant inconnu',
+                        restaurantName: item.restaurantName || 'Restaurant ',
                         restaurantId: item.restaurantId,
                         isAvailable: item.isAvailable !== false
                     };
@@ -96,7 +96,7 @@ const StoreContextProvider = (props) => {
                 setFoodList(transformedData);
             } else {
                 console.error('Invalid response format:', response);
-                setError('Format de réponse invalide');
+                setError(' invalide Format ');
             }
         } catch (error) {
             console.error('Error fetching food list:', error);

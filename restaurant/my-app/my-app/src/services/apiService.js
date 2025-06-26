@@ -2,12 +2,12 @@ import axios from 'axios'
 axios.defaults.baseURL = "/"
 
 // Configuration des URLs des microservices
-const API_CONFIG = {
-  ORDER_SERVICE: 'http://localhost:4003',
-  MENU_SERVICE: 'http://localhost:4002',
-  RESTAURANT_SERVICE: 'http://localhost:4004',
-  ARTICLE_SERVICE: 'http://localhost:4005' // URL pour le service Articles
-};
+// const API_CONFIG = {
+//   ORDER_SERVICE: 'http://localhost:4003',
+//   MENU_SERVICE: 'http://localhost:4002',
+//   RESTAURANT_SERVICE: 'http://localhost:4004',
+//   ARTICLE_SERVICE: 'http://localhost:4005' // URL pour le service Articles
+// };
 
 // Configuration axios par défaut
 axios.defaults.timeout = 10000; // 10 secondes
@@ -21,6 +21,7 @@ axios.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
 
 // Service pour les commandes
 export const orderService = {
@@ -122,7 +123,7 @@ export const restaurantService = {
 export const articleService = {
   getAllArticles: async () => {
     try {
-      const response = await axios.get(`/articles`);
+      const response = await axios.get(`/api/articles`);
       return response.data;
     } catch (error) {
       throw new Error('Erreur lors de la récupération des articles');
@@ -130,7 +131,7 @@ export const articleService = {
   },
   getArticleById: async (articleId) => {
     try {
-      const response = await axios.get(`/articles/${articleId}`);
+      const response = await axios.get(`/api/articles/${articleId}`);
       return response.data;
     } catch (error) {
       throw new Error(`Erreur lors de la récupération de l'article ${articleId}`);
@@ -138,7 +139,7 @@ export const articleService = {
   },
   getArticlesByRestaurant: async (restaurantId) => {
     try {
-      const response = await axios.get(`/articles/restaurant/${restaurantId}`);
+      const response = await axios.get(`/api/articles/restaurant/${restaurantId}`);
       return response.data;
     } catch (error) {
       throw new Error(`Erreur lors de la récupération des articles du restaurant ${restaurantId}`);
@@ -146,7 +147,7 @@ export const articleService = {
   },
   createArticle: async (articleData) => {
     try {
-      const response = await axios.post(`/articles`, articleData);
+      const response = await axios.post(`/api/articles`, articleData);
       return response.data;
     } catch (error) {
       throw new Error('Erreur lors de la création de l\'article');
@@ -154,7 +155,7 @@ export const articleService = {
   },
   updateArticle: async (articleId, updateData) => {
     try {
-      const response = await axios.patch(`/articles/${articleId}`, updateData);
+      const response = await axios.patch(`/api/articles/${articleId}`, updateData);
       return response.data;
     } catch (error) {
       throw new Error('Erreur lors de la mise à jour de l\'article');
@@ -162,7 +163,7 @@ export const articleService = {
   },
   deleteArticle: async (articleId) => {
     try {
-      const response = await axios.delete(`/articles/${articleId}`);
+      const response = await axios.delete(`/api/articles/${articleId}`);
       return response.data;
     } catch (error) {
       throw new Error('Erreur lors de la suppression de l\'article');
@@ -197,7 +198,7 @@ export const menuService = {
       throw new Error(`Erreur lors de la récupération des menus du restaurant ${restaurantId}`);
     }
   }
-};
+}; 
 
 // Fonction utilitaire pour mapper les statuts de commande
 
@@ -221,7 +222,7 @@ export const mapOrderStatus = (dbStatus, accepted) => {
       }
       return { status: 'En attente', statusClass: 'pending' };
   }
-};
+}; 
 
 // Fonction utilitaire pour formater les dates
 export const formatDate = (dateString) => {
@@ -230,6 +231,6 @@ export const formatDate = (dateString) => {
     date: date.toLocaleDateString('fr-FR'),
     time: date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
   };
-};
+}; 
 
 export default axios

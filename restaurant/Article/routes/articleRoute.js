@@ -18,7 +18,7 @@ articleRouter.get('/', async (req, res) => {
             
             // Construct proper image URL if it's just a filename
             if (articleObj.image && !articleObj.image.startsWith('http')) {
-                articleObj.image = `http://localhost:${process.env.PORT || 4005}/images/food/${articleObj.image}`;
+                articleObj.image = `http://localhost:${process.env.PORT || 5007}/images/food/${articleObj.image}`;
             }
             
             return articleObj;
@@ -55,7 +55,7 @@ articleRouter.get('/:id', async (req, res) => {
         
         // Construct proper image URL if it's just a filename
         if (articleObj.image && !articleObj.image.startsWith('http')) {
-            articleObj.image = `http://localhost:${process.env.PORT || 4005}/images/food/${articleObj.image}`;
+            articleObj.image = `http://localhost:${process.env.PORT || 5007}/images/food/${articleObj.image}`;
         }
         
         res.json({
@@ -84,7 +84,7 @@ articleRouter.get('/restaurant/:restaurantId', async (req, res) => {
             
             // Construct proper image URL if it's just a filename
             if (articleObj.image && !articleObj.image.startsWith('http')) {
-                articleObj.image = `http://localhost:${process.env.PORT || 4005}/images/food/${articleObj.image}`;
+                articleObj.image = `http://localhost:${process.env.PORT || 5007}/images/food/${articleObj.image}`;
             }
             
             return articleObj;

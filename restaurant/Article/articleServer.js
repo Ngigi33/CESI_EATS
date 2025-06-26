@@ -13,7 +13,7 @@ import fs from 'fs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const app = express();
-const port = process.env.PORT || 4005;
+const port = process.env.PORT || 5007;
 
 // CORS très permissif
 app.use(cors({

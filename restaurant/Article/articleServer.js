@@ -98,7 +98,7 @@ app.get('/test-image/:filename', (req, res) => {
     }
 });
 
-app.listen(port, () => {
+app.listen(port,'0.0.0.0',  () => {
     console.log(`Article Service running on http://localhost:${port}`);
     console.log(`Images path: ${imagesPath}`);
     

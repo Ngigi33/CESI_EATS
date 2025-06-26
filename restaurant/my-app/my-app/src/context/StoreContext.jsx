@@ -46,7 +46,7 @@ const StoreContextProvider = (props) => {
 
 
 
-    /*useEffect(() => {
+    useEffect(() => {
         async function loadData() {
             if (localStorage.getItem("token")) {
                 setToken(localStorage.getItem("token"));
@@ -54,11 +54,12 @@ const StoreContextProvider = (props) => {
             }
         }
         loadData();
-    }, [])*/
+    }, [])
 
     useEffect(() => {
         if (localStorage.getItem("token")) {
             setToken(localStorage.getItem("token"))
+            console.log("token");
         }
     }, [])
 
@@ -85,7 +86,7 @@ const StoreContextProvider = (props) => {
             return newCart;
         });
         if (token) {
-            await axios.post(url_order + "/cart/remove", { itemId }, { headers: { Authorization: `Bearer ${token}` } });
+            await axios.post('/api/cart/remove', { itemId }, { headers: { Authorization: `Bearer ${token}` } });
         }
     };
 

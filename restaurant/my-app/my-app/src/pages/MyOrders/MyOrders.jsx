@@ -12,17 +12,17 @@ const MyOrders = () => {
   const [data, setData] = useState([]);
 
   const fetchOrders = async () => {
-    const response = await axios.post(url_order + "/api/orders/userOrders", {}, { headers: { Authorization: `Bearer ${token}` } });
+    const response = await axios.post('/api/orders/userOrders', {}, { headers: { Authorization: `Bearer ${token}` } });
     setData(response.data.data);
     console.log(response.data.data)
   }
 
   const handleCancelOrder = async (orderID, status) => {
     try {
-      const response = await axios.patch(url_order + "/api/orders/status", {
+      const response = await axios.patch('/api/orders/status', {
         orderID: orderID,
         status: status
-      }, {headers: {Authorization: `Bearer ${token}`}});
+      }, { headers: { Authorization: `Bearer ${token}` } });
 
       if (response.data.success) {
         alert("Order cancelled successfully!");

@@ -23,7 +23,7 @@ const DeliveryDashboard = () => {
   const fetchAllOrders = async () => {
 
     try {
-      const response = await axios.get("http://localhost:3001/api/orders/list");
+      const response = await axios.get("/api/orders/list");
       if (response.data.success) {
         const allOrders = response.data.data;
         const categorized = {
@@ -135,7 +135,7 @@ const DeliveryDashboard = () => {
         }));
         setStats(prev => ({
           ...prev,
-          todayEarnings: prev.todayEarnings + parseFloat(delivery.payment.replace('€', '')),
+          todayEarnings: prev.todayEarnings*0.2 + parseFloat(delivery.payment.replace('€', '')),
           deliveriesCompleted: prev.deliveriesCompleted + 1
         }));
       }
@@ -145,7 +145,7 @@ const DeliveryDashboard = () => {
 
   const updateDriverStatus = async (orderID, status) => {
     try {
-      const response = await axios.patch('http://localhost:3001/api/orders/driver_status', {
+      const response = await axios.patch('/api/orders/driver_status', {
         orderID,
         driverstatus: status
       });

@@ -1,9 +1,11 @@
 import express from 'express';
 import Stripe from 'stripe';
 import Payment from '../models/payment.model.js';
-
+const FRONTEND_URL = 'http://localhost';
 const router = express.Router();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+import axios from "axios";
+
 
 // Create payment intent
 router.post('/create-payment-intent', async (req, res) => {
@@ -75,6 +77,8 @@ router.get('/history/restaurant/:restaurantId', async (req, res) => {
 router.post('/createCheckoutSession', async (req, res) => {
   const { new_order_id, cartItems, customerId, restaurantId } = req.body;
 
+
+
   try {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -95,11 +99,12 @@ router.post('/createCheckoutSession', async (req, res) => {
         customerId,
         restaurantId,
       },
-      success_url: `http://localhost:80/verify?success=true&orderId=${new_order_id}`,
-      cancel_url: `http://localhost:80/cancel`,
+      success_url: `http://localhost`,
+      cancel_url: `http://localhost:3000/cancel`,
     });
 
-    res.status(200).json({ url: session.url });
+    res.status(200).json({ success: true, url: session.url });
+
   } catch (err) {
     console.error('Stripe error:', err);
     res.status(500).json({ error: 'Unable to create Stripe session' });

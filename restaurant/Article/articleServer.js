@@ -69,7 +69,7 @@ app.get('/test-images', (req, res) => {
             path: imagesPath,
             count: files.length,
             sampleUrls: files.slice(0, 3).map(file =>
-                `http://localhost:${port}/images/food/${file}`
+                `${file}`
             )
         });
     } catch (error) {
@@ -110,7 +110,7 @@ app.listen(port, '0.0.0.0', () => {
             console.log(`📁 ${files.length} fichiers trouvés`);
             if (files.length > 0) {
                 console.log('Premier fichier:', files[0]);
-                console.log('URL de test:', `http://localhost:${port}/images/food/${files[0]}`);
+                console.log('URL de test:', `http://localhost:${port}/api/images/food/${files[0]}`);
             }
         } catch (e) {
             console.log('❌ Erreur lecture dossier:', e.message);

@@ -17,10 +17,10 @@ const MyOrders = () => {
     console.log(response.data.data)
   }
 
-  const handleCancelOrder = async (orderID, status) => {
+  const handleCancelOrder = async (orderId, status) => {
     try {
       const response = await axios.patch('/api/orders/status', {
-        orderID: orderID,
+        orderId: orderId,
         status: status
       }, { headers: { Authorization: `Bearer ${token}` } });
 

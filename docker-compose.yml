@@ -34,7 +34,7 @@ services:
     expose:
       - "5007:5007"
     volumes:
-      - "/c/Users/Administrator/Documents/Intership and Attachments/CESI Exchange/Study/Elective Software Development/CESI_Eats - Copy/public/images:/app/public/images"
+      - ./public/images/food:/app/public/images/food # host:container
     restart: always
     networks:
       - backend-net

@@ -36,6 +36,11 @@ export const createOrder = async (req, res) => {
 
 
     const checkoutUrl = paymentResponse.data.url;
+    if (paymentResponse.data.success) {
+      await orderModel.findByIdAndUpdate(new_order._id, {
+        payment: true
+      });
+    }
 
     // 4. Return the order and clientSecret
     res.status(201).json({
@@ -44,6 +49,7 @@ export const createOrder = async (req, res) => {
       order: new_order,
       checkoutUrl,
     });
+
   }
   catch (error) {
     console.error('Error creating order:', error.message);
@@ -88,11 +94,13 @@ export const updateOrderStatus = async (req, res) => {
 
   try {
     await orderModel.findByIdAndUpdate(req.body.orderId, { status: req.body.status });
+    console.log("Status updated");
     res.json({ success: true, message: "Status updated" });
   }
 
   catch (error) {
     console.error(' Error updating status:', error.message);
+    console.log("Status updated");
     res.status(500).json({ error: 'Status update failed' });
   }
 

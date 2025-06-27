@@ -8,7 +8,7 @@ export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
 
-    const url_order = 'http://localhost:5009/api'; 
+    const url_order = 'http://localhost:5009/api';
 
     //const auth_url = "http://localhost:5000/api/auth" //user management url from docker
 
@@ -128,10 +128,13 @@ const StoreContextProvider = (props) => {
                 const transformedData = response.data.map(item => {
                     // If the image is already a full URL, use it as is.
                     // Otherwise, construct the full URL.
-                    const imageUrl = item.image.startsWith('http')
-                        ? item.image
-                        : `${baseUrl}/api/images/food/${item.image}`;
+                    const backendUrl = 'http://localhost:5007';
+                    // Extract number from image filename (e.g., food_22.png → 22)
+                    const imageMatch = item.image?.match(/food_(\d+)\.png/);
+                    const imageNumber = imageMatch ? imageMatch[1] : '1'; // Default to '1' if no match
 
+                    // Construct image URL using the matched number
+                    const imageUrl = `/images/food/food_${imageNumber}.png`;
                     return {
                         _id: item._id,
                         name: item.name,
@@ -147,6 +150,7 @@ const StoreContextProvider = (props) => {
                 });
                 console.log('Transformed data:', transformedData);
                 setFoodList(transformedData);
+
             } else {
                 console.error('Invalid response format:', response);
                 setError('Format de réponse invalide');

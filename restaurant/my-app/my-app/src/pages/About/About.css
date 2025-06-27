@@ -1,0 +1,30 @@
+.about-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+  line-height: 1.6;
+  color: #333;
+}
+
+.about-container h1 {
+  font-size: 28px;
+  color: tomato;
+  margin-bottom: 20px;
+}
+
+.about-container h2 {
+  color: tomato;
+  margin-top: 30px;
+  margin-bottom: 10px;
+}
+
+.about-container ul {
+  list-style: disc;
+  margin-left: 20px;
+  margin-bottom: 20px;
+}
+
+.about-container p {
+  margin-bottom: 15px;
+}

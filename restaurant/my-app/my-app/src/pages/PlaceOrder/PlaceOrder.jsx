@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import './PlaceOrder.css'
 import { StoreContext } from '../../context/StoreContext'
 import axios from 'axios'
+axios.defaults.baseURL="/"
 
 const PlaceOrder = () => {
 
@@ -42,7 +43,8 @@ const PlaceOrder = () => {
     }
 
     console.log(orderData);
-    let response = await axios.post(url_order + "/api/orders/create", orderData, { headers: { Authorization: `Bearer ${token}` } });
+
+    let response = await axios.post("/api/orders/create", orderData, { headers: { Authorization: `Bearer ${token}` } });
     if (response.data.success) {
       window.location.href = response.data.checkoutUrl;
     }

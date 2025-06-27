@@ -6,19 +6,26 @@ import { StoreContext } from '../../context/StoreContext';
 
 const Navbar = ({setShowLogin}) => {
 
-    const [menu,setMenu] = useState("menu");
+  //buttons onClick
+  const [menu,setMenu] = useState("menu");
 
-    const {getTotalCartAmount, token, setToken} = useContext(StoreContext);
+  const {getTotalCartAmount, token, setToken} = useContext(StoreContext);
 
-    //token, setToken, and localStorage for navigation and logout
-    const navigate = useNavigate()
-    const logout = () =>{
-      localStorage.removeItem("token")
-      localStorage.removeItem("user")
-      localStorage.removeItem("userRole")
-      setToken("")
-      navigate("/")
-    }
+  //token, setToken, and localStorage for navigation and logout
+  const navigate = useNavigate()
+  const account = () =>{
+    navigate('/account')
+  }
+  const orders = () =>{
+    navigate('order')
+  }
+  const logout = () =>{
+    localStorage.removeItem("token")
+    localStorage.removeItem("user")
+    localStorage.removeItem("userRole")
+    setToken("")
+    navigate("/")
+  }
 
   return (
     <div className='navbar'>
@@ -37,9 +44,11 @@ const Navbar = ({setShowLogin}) => {
         </div>
         {!token? <button onClick={()=>setShowLogin(true)}>sign in</button>
         :<div className='navbar-profile'>
-            <img src={assets.profile_icon} alt=""/>
+            <img src={assets.profile_icon} alt="Profile"/>
             <ul className='nav-profile-dropdown'>
-              <li><img src={assets.bag_icon} alt=""/><p>Orders</p></li>
+              <li onClick={account}><img src={assets.profile_icon} alt='Account'/><p>Account</p></li>
+              <hr />
+              <li onClick={orders}><img src={assets.bag_icon} alt=""/><p>Orders</p></li>
               <hr />
               <li onClick={logout}><img src={assets.logout_icon} alt=""/><p>Logout</p></li>
             </ul>

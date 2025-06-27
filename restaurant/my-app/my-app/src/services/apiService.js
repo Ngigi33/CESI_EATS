@@ -1,6 +1,16 @@
 import axios from 'axios'
 axios.defaults.baseURL = "/"
 
+axios.defaults.timeout = 10000;
+axios.defaults.headers.common['Content-Type'] = 'application/json';
+
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error('Erreur API:', error);
+    return Promise.reject(error);
+  }
+);
 
 // Service pour les commandes
 export const orderService = {

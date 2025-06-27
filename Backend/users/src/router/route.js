@@ -18,7 +18,7 @@ module.exports = function(app){
     app.post("/login",  userController.login)
     app.get("/user", auth, userController.getAllUsers)
     app.get("/user/:id", auth, userController.getUserById)
-    app.put("/user/:id", auth, userController.updateUser)
-    app.delete("/user/:id", auth, userController.deleteUser)
+    app.put("/user/update/:id", auth, userController.updateUser)
+    app.delete("/user/delete/:id", auth, userController.deleteUser)
     app.get("/user/name/:name", auth, userController.getUserByName)
 };

@@ -24,22 +24,6 @@ const userSchema = new mongoose.Schema({
     imageUrl: {
         type: String,
         required: false
-    },
-    role: {
-    type: String,
-    enum: ['END_USER', 'RESTAURANT_OWNER', 'DELIVERY_DRIVER', 'THIRD_PARTY_DEV', 'SALES_DEPT', 'TECH_SUPPORT'],
-    default: 'END_USER'
-    },
-    status: {
-    type: String,
-    enum: ['active', 'suspended', 'pending'],
-    default: 'active'
-    },
-    permissions : {
-    type: [String],
-    enum: ['1', '2','3', '4', '5', '6'],
-    default: ['1'], // Default permission users
-    required: true
     }
  });
 

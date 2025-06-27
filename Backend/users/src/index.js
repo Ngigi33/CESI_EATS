@@ -1,5 +1,5 @@
 //const {app} = require("./index.js");
-const port = 4000;
+const port = 5000;
 
 const express = require('express');
 const cors = require('cors');
@@ -11,7 +11,8 @@ require('dotenv').config();
 
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // Ajoute cette ligne
+app.use(express.urlencoded({ extended: true })); 
+
 db.connectDB();
  
 router = require('./router/route')(app);

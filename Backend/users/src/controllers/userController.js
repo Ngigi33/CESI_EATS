@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 
 
 exports.register = (req, res) => {
-    const { name, email, password, role, status, permissions } = req.body;
+    const { name, email, password} = req.body;
     const image = `${req.file.filename}`;
     if (!name || !email || !password) {
         return res.status(400).json({ message: 'Tous les champs sont requis', image, name, email, password });
@@ -15,16 +15,14 @@ exports.register = (req, res) => {
         email,
         password: bcrypt.hashSync(password, 10),
         imageUrl: image,
-        role,
-        status,
-        permissions
+
     });
     newUser.save()
         .then(() => {
-            res.status(201).json({ message: 'Nouvel utilisateur créé !' });
+            res.status(201).json({ message: 'ok' });
         })
         .catch((error) => {
-            res.status(500).json({ message: 'Erreur lors de la création de l\'utilisateur', error: error.message });
+            res.status(500).json({ message: 'register', error: error.message });
         });
 };
 
@@ -34,22 +32,18 @@ exports.login = async (req, res) => {
     //   return res.status(400).json({ message: "Name and password are required in req", name: req.body.name, password: req.body.password });
     // }
   const { email, password} = req.body;
-    const passwordd = bcrypt.hashSync(password, 10);
   if (!email || !password) {
-    return res.status(400).json({ message: "Email and password are required", email, passwordd });
+    return res.status(400).json({ message: "login", email, password });
   }
   const user = await userModel.findOne({ email });
 
   if (!user) {
     return res.status(401).json({ message: "Invalid credentials" });
   }
-
+ kay ='pas';
   try {
-    if (await bcrypt.compare(passwordd, user.password)) {
-      const accessToken = jwt.sign(
-        { name: user.name, userId: user.uuid, email: user.email, role: user.role, permissions: user.permissions, exp: Math.floor(Date.now() / 1000) + 120 },
-        process.env.JWT_SECRET
-      );
+    if (await bcrypt.compare(password, user.password)) {
+        const accessToken = jwt.sign({email: user.email}, kay, {expiresIn: 86400})
       return res.status(200).json({ accessToken });
     } else {
       return res.status(401).json({ message: "Invalid credentials" });
@@ -64,18 +58,19 @@ exports.getAllUsers = async (req, res) => {
         const users = await userModel.find();
         res.status(200).json(users);
     } catch (error) {
-        res.status(500).json({ message: 'Erreur lors de la récupération des utilisateurs', error: error.message });
+        res.status(500).json({ message: 'getAllUsers', error: error.message });
     }
 };
 exports.getUserById = async (req, res) => {
     try {
+        const IdUser = req.params.id; 
         const user = await userModel.findOne({ IdUser: req.params.id }); // Utiliser userId pour la recherche
         if (!user) {
-            return res.status(404).json({ message: 'Utilisateur non trouvé' });
+            return res.status(404).json({ message: 'Utilisateur non trouvé', IdUser });
         }
         res.status(200).json(user);
     } catch (error) {
-        res.status(500).json({ message: 'Erreur lors de la récupération de l\'utilisateur', error: error.message });
+        res.status(500).json({ message: 'getuserbyId', error: error.message });
     }
 };  
 
@@ -88,9 +83,9 @@ exports.updateUser = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'Utilisateur non trouvé' });
         }
-        res.status(200).json({ message: 'Utilisateur mis à jour avec succès', user });
+        res.status(200).json({ message: user });
     } catch (error) {
-        res.status(500).json({ message: 'Erreur lors de la mise à jour de l\'utilisateur', error: error.message });
+        res.status(500).json({ message:"update", error: error.message });
     }
 };
 

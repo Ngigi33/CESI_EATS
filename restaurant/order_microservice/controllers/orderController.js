@@ -27,7 +27,7 @@ export const createOrder = async (req, res) => {
     );
 
     // 3. Call the payment microservice to create a payment intent
-    const paymentResponse = await axios.post('http://localhost:5002/api/payments/createCheckoutSession', {
+    const paymentResponse = await axios.post('http://payment_service:5002/api/payments/createCheckoutSession', {
       new_order_id: new_order._id,
       cartItems: req.body.items,
       customerId: req.body.userId,

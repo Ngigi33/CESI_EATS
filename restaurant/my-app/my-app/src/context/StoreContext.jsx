@@ -1,4 +1,3 @@
-
 import { createContext, useEffect, useState } from "react";
 import { articleService } from "../services/apiService";
 import axios from "axios";
@@ -8,8 +7,8 @@ export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
 
-    const url_order = 'http://localhost:5009/api/orders'; //order service url from docker
-    const url_cart = 'http://localhost:5009/api/cart' // cart on order service
+    const url_order = 'http://localhost:3001/api/orders'; //order service url from docker
+    // const url_cart = 'http://localhost:5009/api/cart'  cart on order service
     const auth_url = "http://localhost:5000/api/auth" //user management url from docker
     
     const [token, setToken] = useState("");
@@ -67,7 +66,7 @@ const StoreContextProvider = (props) => {
             setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] + 1 }));
         }
         if (token) {
-            await axios.post(url_order + "/api/cart/add", { itemId }, { headers: { Authorization: `Bearer ${token}` } });
+            await axios.post("/api/cart/add", { itemId }, { headers: { Authorization: `Bearer ${token}` } });
         }
     };
 
@@ -81,12 +80,12 @@ const StoreContextProvider = (props) => {
             return newCart;
         });
         if (token) {
-            await axios.post(url_order + "/api/cart/remove", { itemId }, { headers: { Authorization: `Bearer ${token}` } });
+            await axios.post("/api/cart/remove", { itemId }, { headers: { Authorization: `Bearer ${token}` } });
         }
     };
 
     const loadCartData = async (token) => {
-        const response = await axios.post(url_order + "/api/cart/get", {}, { headers: { Authorization: `Bearer ${token}` } });
+        const response = await axios.post("/api/cart/get", {}, { headers: { Authorization: `Bearer ${token}` } });
         setCartItems(response.data.cartData);
     }
 

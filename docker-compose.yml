@@ -24,7 +24,7 @@ services:
     build: ./restaurant/Restaurant
     container_name: restaurant_service
     expose: 
-      - "5006"
+      - "4004"
     restart: always
     networks: 
       - backend-net
@@ -33,7 +33,7 @@ services:
     build: ./restaurant/Article 
     container_name: article_service
     expose:
-      - "5007"
+      - "4005"
     restart: always
     networks:
       - backend-net 
@@ -44,7 +44,7 @@ services:
     env_file:
       - ./restaurant/delivery-microservice/.env
     expose:
-      - "5008"
+      - "3002"
     restart: always
     depends_on:
       - order_service
@@ -57,7 +57,7 @@ services:
     env_file:
       - ./restaurant/order_microservice/.env
     expose:
-      - "5009"
+      - "3001"
     restart: always
     depends_on:
       - article_service
@@ -70,7 +70,7 @@ services:
     env_file:
       - ./restaurant/payment_microservice/.env
     expose:
-      - "5010"
+      - "5002"
     restart: always
     depends_on:
       - order_service
@@ -84,8 +84,8 @@ services:
       context: ./restaurant/my-app/my-app
       dockerfile: Dockerfile
     container_name: frontend
-    ports:
-     - "80:80"
+    expose:
+     - "80"
     restart: always
     networks:
       - backend-net

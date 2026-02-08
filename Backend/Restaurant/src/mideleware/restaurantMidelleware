@@ -1,0 +1,29 @@
+const jwt = require('jsonwebtoken');
+const Restaurant_DB = require('../models/restaurantModel'); // Assurez-vous que le chemin est correct pour votre modèle de restaurant
+
+exports.midelwarerestaurant = async (req, res) => {
+    const requise = ['Restaurant', 'Admin', 'user']; // Permissions requises pour accéder à cette route
+    try {
+        const tok = req.headers['authorization']
+
+        if (!token) {
+            return res.status(401).json({ message: 'Token manquant' });
+        }
+        const token = tok && tok.split(' ')[1]; // Extraire le token du format "Bearer token"
+
+          jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+            if (err) return res.sendStatus(403);
+           
+          const restaurant = Restaurant_DB.find(u => u.OwnerId === decoded.userId);
+            if (!restaurant) return res.sendStatus(403);
+        if (!requise.includes(restaurant.role)) {
+            return res.status(403).json({ message: 'Accès interdit' });
+        }
+
+        //  return res.status(200).json({ message: "Authenticated", user: decoded.OwnerId });
+        next();
+        }
+        );
+    } catch (error) {
+        res.status(500).json({ message: 'Erreur lors de l\'authentification', error: error.message });
+    }}

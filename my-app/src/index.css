@@ -15,8 +15,19 @@ a{
 }
 .app{
   width: 80%;
+  padding: 0;
   margin: auto;
 }
+html, body {
+  margin: 0;
+  padding: 0;
+}
+.flex-col{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 
 @keyframes fadeIn {
   0%{

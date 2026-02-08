@@ -1,0 +1,56 @@
+
+
+services: #Déclaration des différents services qui seront exécutés
+
+  nginx:
+
+    image: nginx:latest #Nous allons chercher la dernière version de nginx existante
+
+    container_name: gatewaycesieats #Nous nommons le container
+
+    volumes:
+
+     - ./nginx.conf:/etc/nginx/nginx.conf #Affectation du fichier de config personnalisé 
+
+    ports:
+
+      - "8080:8080" #Nous exposerons sur le port 8080
+
+    networks:
+
+      - app-network #Nous encapsulons nos services dans un seul et même réseau
+       
+    depends_on: 
+    
+      - restaurant-service
+      - food-service
+      - frontend-service  #Dépendance du service
+
+  food-service:
+      build: ./Backend/food/
+      container_name: food-service
+      ports:
+       - "3001:3000"
+      networks:
+        - app-network
+
+  restaurant-service:
+      build: ./Backend/Restaurant/
+      container_name: restaurant-service
+      ports:
+       - "3002:3000"
+      networks: 
+        - app-network
+
+  frontend-service:
+    build: ./my-app/
+    container_name: frontend-service
+    ports:
+      - "3000:80"  # le conteneur expose 80, on le mappe sur 3000 localement
+    networks: 
+      - app-network
+
+
+networks:
+   app-network:
+    driver: bridge
